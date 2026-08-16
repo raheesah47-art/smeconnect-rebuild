@@ -1,4 +1,4 @@
-const API_BASE_AUTH = 'http://localhost/smeconnect/api';
+const API_BASE_AUTH = 'http://localhost/smeconnect/api/auth';
 
 function checkSession() {
   fetch(`${API_BASE_AUTH}/check_session.php`, { credentials: 'same-origin' })
