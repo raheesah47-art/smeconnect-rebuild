@@ -2,10 +2,10 @@ const API_PRODUCTS = 'http://localhost/smeconnect/api/products';
 const API_CART = 'http://localhost/smeconnect/api/cart';
 const API_PAYMENTS = 'http://localhost/smeconnect/api/payments';
 
-function loadProducts() {
+function loadProducts(overrideFilter, overrideCategory) {
   const params = new URLSearchParams(window.location.search);
-  const filter = params.get('filter') || '';
-  const category = params.get('category') || '';
+  const filter = overrideFilter !== undefined ? overrideFilter : (params.get('filter') || '');
+  const category = overrideCategory !== undefined ? overrideCategory : (params.get('category') || '');
 
   let url = `${API_PRODUCTS}/get_products.php?filter=${filter}&category=${encodeURIComponent(category)}`;
 
