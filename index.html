@@ -28,18 +28,18 @@
   <main>
     <div class="page-layout">
 
-      <aside class="side-nav">
-        <a href="#" class="nav-item active">🏠 Home</a>
-        <a href="#" class="nav-item">▦ Categories</a>
-        <a href="#" class="nav-item">💳 Deals</a>
-        <a href="#" class="nav-item">⭐ New arrivals</a>
-        <a href="#" class="nav-item">📊 Best sellers</a>
-        <a href="#" class="nav-item">📍 Local makers</a>
-        <hr>
-        <a href="#" class="nav-item">📦 My orders</a>
-        <a href="#" class="nav-item">♡ Wishlist</a>
-        <a href="seller-dashboard.html" class="nav-item">⚙ Seller Dashboard</a>
-      </aside>
+ <aside class="side-nav">
+  <a href="index.html" class="nav-item">🏠 Home</a>
+  <a href="index.html?filter=" class="nav-item" id="categoriesLink">▦ Categories</a>
+  <a href="index.html?filter=deals" class="nav-item">💳 Deals</a>
+  <a href="index.html?filter=new" class="nav-item">⭐ New arrivals</a>
+  <a href="index.html?filter=bestsellers" class="nav-item">📊 Best sellers</a>
+  <a href="#" class="nav-item" onclick="document.querySelector('.makers-section').scrollIntoView({behavior:'smooth'}); return false;">📍 Local makers</a>
+  <hr>
+  <a href="my-orders.html" class="nav-item">📦 My orders</a>
+  <a href="wishlist.html" class="nav-item">♡ Wishlist</a>
+  <a href="seller-dashboard.html" class="nav-item">⚙ Seller Dashboard</a>
+</aside>
 
       <div class="main-content">
         <section class="hero-banner">
@@ -50,13 +50,13 @@
         </section>
 
         <section class="category-row">
-          <div class="category-item"><span>👕</span><p>Fashion</p></div>
-          <div class="category-item"><span>💧</span><p>Beauty</p></div>
-          <div class="category-item"><span>💼</span><p>Electronics</p></div>
-          <div class="category-item"><span>🏠</span><p>Home & craft</p></div>
-          <div class="category-item"><span>🥭</span><p>Produce</p></div>
-          <div class="category-item"><span>▦</span><p>All categories</p></div>
-        </section>
+  <a href="index.html?category=Fashion" class="category-item"><span>👕</span><p>Fashion</p></a>
+  <a href="index.html?category=Beauty" class="category-item"><span>💧</span><p>Beauty</p></a>
+  <a href="index.html?category=Electronics" class="category-item"><span>💼</span><p>Electronics</p></a>
+  <a href="index.html?category=Home%20%26%20craft" class="category-item"><span>🏠</span><p>Home & craft</p></a>
+  <a href="index.html?category=Produce" class="category-item"><span>🥭</span><p>Produce</p></a>
+  <a href="index.html" class="category-item"><span>▦</span><p>All categories</p></a>
+</section>
 
         <section class="promo-row">
           <div class="promo-card promo-coral">

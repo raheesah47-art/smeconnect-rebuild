@@ -1,11 +1,27 @@
 const API_BASE = 'http://localhost/smeconnect/api';
 
 function loadProducts() {
-  fetch(`${API_BASE}/get_products.php`, { credentials: 'same-origin' })
+  const params = new URLSearchParams(window.location.search);
+  const filter = params.get('filter') || '';
+  const category = params.get('category') || '';
+
+  let url = `${API_BASE}/get_products.php?filter=${filter}&category=${encodeURIComponent(category)}`;
+
+  fetch(url, { credentials: 'same-origin' })
     .then(res => res.json())
     .then(products => {
       const grid = document.getElementById('productGrid');
       grid.innerHTML = '';
+
+      const titleEl = document.querySelector('#productsSection .section-title');
+      const titles = { deals: 'Deals', new: 'New arrivals', bestsellers: 'Best sellers' };
+      titleEl.textContent = category ? category : (titles[filter] || 'Best deals for you');
+
+      if (products.length === 0) {
+        grid.innerHTML = '<p>No products found.</p>';
+        return;
+      }
+
       products.forEach(p => {
         const discountPct = p.original_price
           ? Math.round(100 - (p.price / p.original_price) * 100)
@@ -17,6 +33,7 @@ function loadProducts() {
           <div class="card-tile">
             ${discountPct ? `<span class="badge-discount">-${discountPct}%</span>` : ''}
             <span class="badge-verified">${p.trust_score} Verified</span>
+            <button class="wishlist-btn" data-id="${p.id}">♡</button>
           </div>
           <div class="card-body">
             <p class="category">${p.category}</p>
@@ -32,9 +49,11 @@ function loadProducts() {
         grid.appendChild(card);
       });
 
-      // Wire up every "+" button just created
       document.querySelectorAll('.add-btn').forEach(btn => {
         btn.addEventListener('click', () => addToCart(btn.dataset.id));
+      });
+      document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', () => toggleWishlist(btn.dataset.id, btn));
       });
     });
 }
