@@ -31,8 +31,9 @@ function loadProducts(overrideFilter, overrideCategory) {
 
         const card = document.createElement('div');
         card.className = 'product-card';
-        card.innerHTML = `
-          <div class="card-tile">
+       card.innerHTML = `
+  <a href="/smeconnect/product.php?id=${p.id}" style="text-decoration:none; color:inherit;">
+  <div class="card-tile">
             ${discountPct ? `<span class="badge-discount">-${discountPct}%</span>` : ''}
             <span class="badge-verified">${p.trust_score} Verified</span>
             <button class="wishlist-btn" data-id="${p.id}">♡</button>
@@ -45,14 +46,19 @@ function loadProducts(overrideFilter, overrideCategory) {
               <span class="price">Rs ${p.price}</span>
               ${p.original_price ? `<span class="original-price">Rs ${p.original_price}</span>` : ''}
               <button class="add-btn" data-id="${p.id}">+</button>
-            </div>
-          </div>
-        `;
+         </div>
+  </div>
+  </a>
+`;
         grid.appendChild(card);
       });
 
       document.querySelectorAll('.add-btn').forEach(btn => {
-        btn.addEventListener('click', () => addToCart(btn.dataset.id));
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          addToCart(btn.dataset.id);
+        });
       });
       document.querySelectorAll('.wishlist-btn').forEach(btn => {
         btn.addEventListener('click', () => toggleWishlist(btn.dataset.id, btn));
