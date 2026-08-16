@@ -1,11 +1,13 @@
-const API_BASE = 'http://localhost/smeconnect/api';
+const API_PRODUCTS = 'http://localhost/smeconnect/api/products';
+const API_CART = 'http://localhost/smeconnect/api/cart';
+const API_PAYMENTS = 'http://localhost/smeconnect/api/payments';
 
 function loadProducts() {
   const params = new URLSearchParams(window.location.search);
   const filter = params.get('filter') || '';
   const category = params.get('category') || '';
 
-  let url = `${API_BASE}/get_products.php?filter=${filter}&category=${encodeURIComponent(category)}`;
+  let url = `${API_PRODUCTS}/get_products.php?filter=${filter}&category=${encodeURIComponent(category)}`;
 
   fetch(url, { credentials: 'same-origin' })
     .then(res => res.json())
@@ -55,41 +57,45 @@ function loadProducts() {
       document.querySelectorAll('.wishlist-btn').forEach(btn => {
         btn.addEventListener('click', () => toggleWishlist(btn.dataset.id, btn));
       });
-    });
+    })
+    .catch(err => console.error('loadProducts failed:', err));
 }
 
 function addToCart(productId) {
-  fetch(`${API_BASE}/add_to_cart.php`, {
+  fetch(`${API_CART}/add_to_cart.php`, {
     method: 'POST',
     credentials: 'same-origin',
     body: JSON.stringify({ product_id: productId })
   })
     .then(res => res.json())
-    .then(() => loadCart());
+    .then(() => loadCart())
+    .catch(err => console.error('addToCart failed:', err));
 }
 
 function updateCartQty(cartItemId, quantity) {
-  fetch(`${API_BASE}/update_cart.php`, {
+  fetch(`${API_CART}/update_cart.php`, {
     method: 'POST',
     credentials: 'same-origin',
     body: JSON.stringify({ cart_item_id: cartItemId, quantity })
   })
     .then(res => res.json())
-    .then(() => loadCart());
+    .then(() => loadCart())
+    .catch(err => console.error('updateCartQty failed:', err));
 }
 
 function removeFromCart(cartItemId) {
-  fetch(`${API_BASE}/remove_from_cart.php`, {
+  fetch(`${API_CART}/remove_from_cart.php`, {
     method: 'POST',
     credentials: 'same-origin',
     body: JSON.stringify({ cart_item_id: cartItemId })
   })
     .then(res => res.json())
-    .then(() => loadCart());
+    .then(() => loadCart())
+    .catch(err => console.error('removeFromCart failed:', err));
 }
 
 function loadCart() {
-  fetch(`${API_BASE}/get_cart.php`, { credentials: 'same-origin' })
+  fetch(`${API_CART}/get_cart.php`, { credentials: 'same-origin' })
     .then(res => res.json())
     .then(items => {
       const container = document.getElementById('cartItems');
@@ -135,38 +141,26 @@ function loadCart() {
 
       countEl.textContent = totalQty;
       subtotalEl.textContent = `Rs ${subtotal.toFixed(2)}`;
-    });
+    })
+    .catch(err => console.error('loadCart failed:', err));
 }
 
-loadProducts();
-loadCart();
-
-paypal.Buttons({
-  createOrder: function () {
-    return fetch(`${API_BASE}/paypal_create_order.php`, {
-      method: 'POST',
-      credentials: 'same-origin'
+function toggleWishlist(productId, btn) {
+  fetch(`http://localhost/smeconnect/api/wishlist/toggle_wishlist.php`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    body: JSON.stringify({ product_id: productId })
+  })
+    .then(res => res.json())
+    .then(result => {
+      if (result.error) {
+        alert(result.error);
+        return;
+      }
+      btn.textContent = result.wishlisted ? '♥' : '♡';
     })
-      .then(res => res.json())
-      .then(data => data.id); // PayPal's order ID
-  },
-  onApprove: function (data) {
-    return fetch(`${API_BASE}/paypal_capture_order.php`, {
-      method: 'POST',
-      credentials: 'same-origin',
-      body: JSON.stringify({ orderID: data.orderID })
-    })
-      .then(res => res.json())
-      .then(result => {
-        if (result.success) {
-          alert(`Payment successful! Order #${result.order_id} placed.`);
-          loadCart();
-        } else {
-          alert('Payment could not be completed.');
-        }
-      });
-  }
-}).render('#paypal-button-container');
+    .catch(err => console.error('toggleWishlist failed:', err));
+}
 
 function loadMakers() {
   const makers = [
@@ -175,6 +169,7 @@ function loadMakers() {
     { initials: 'KD', name: 'Karo Design', location: 'Curepipe', trust: 91, tag: 'Home', color: '#D9A441' }
   ];
   const grid = document.getElementById('makersGrid');
+  if (!grid) return;
   grid.innerHTML = makers.map(m => `
     <div class="maker-card">
       <div class="maker-avatar" style="background:${m.color}">${m.initials}</div>
@@ -186,4 +181,35 @@ function loadMakers() {
     </div>
   `).join('');
 }
+
+loadCart();
 loadMakers();
+
+if (typeof paypal !== 'undefined') {
+  paypal.Buttons({
+    createOrder: function () {
+      return fetch(`${API_PAYMENTS}/paypal_create_order.php`, {
+        method: 'POST',
+        credentials: 'same-origin'
+      })
+        .then(res => res.json())
+        .then(data => data.id);
+    },
+    onApprove: function (data) {
+      return fetch(`${API_PAYMENTS}/paypal_capture_order.php`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify({ orderID: data.orderID })
+      })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success) {
+            alert(`Payment successful! Order #${result.order_id} placed.`);
+            loadCart();
+          } else {
+            alert('Payment could not be completed.');
+          }
+        });
+    }
+  }).render('#paypal-button-container');
+}
