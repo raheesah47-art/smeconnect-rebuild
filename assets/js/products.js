@@ -1,6 +1,7 @@
 const API_PRODUCTS = 'http://localhost/smeconnect/api/products';
 const API_CART = 'http://localhost/smeconnect/api/cart';
 const API_PAYMENTS = 'http://localhost/smeconnect/api/payments';
+const API_WISHLIST = 'http://localhost/smeconnect/api/wishlist';
 
 function loadProducts(overrideFilter, overrideCategory) {
   const params = new URLSearchParams(window.location.search);
@@ -152,7 +153,7 @@ function loadCart() {
 }
 
 function toggleWishlist(productId, btn) {
-  fetch(`http://localhost/smeconnect/api/wishlist/toggle_wishlist.php`, {
+  fetch(`${API_WISHLIST}/toggle_wishlist.php`, {
     method: 'POST',
     credentials: 'same-origin',
     body: JSON.stringify({ product_id: productId })
