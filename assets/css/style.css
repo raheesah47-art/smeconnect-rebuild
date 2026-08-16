@@ -303,3 +303,194 @@ h1, h2, h3 {
 .trust-item span { font-size: 20px; }
 .trust-item strong { display: block; font-size: 14px; }
 .trust-item p { margin: 2px 0 0; font-size: 12px; opacity: 0.7; }
+
+/* ==========================================================================
+   SMECONNECT — DESIGN POLISH LAYER
+   Append this entire block to the END of assets/css/style.css
+   Does not remove anything — only refines and adds.
+   ========================================================================== */
+
+:root {
+  /* Extending your existing tokens — do not duplicate the ones already in :root above */
+  --color-bg-card: #FFFFFF;
+  --color-border: rgba(15, 27, 61, 0.08);
+  --shadow-sm: 0 1px 2px rgba(15, 27, 61, 0.06);
+  --shadow-md: 0 4px 16px rgba(15, 27, 61, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 27, 61, 0.14);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------- Global refinements ---------- */
+body {
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+}
+
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--color-coral);
+  outline-offset: 2px;
+}
+
+/* ---------- Hero: signature illustration ---------- */
+.hero-banner {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 48px;
+  box-shadow: var(--shadow-lg);
+}
+
+.hero-illustration {
+  position: absolute;
+  top: 50%;
+  right: -40px;
+  transform: translateY(-50%);
+  width: 340px;
+  height: 340px;
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+.hero-banner h1 {
+  font-size: 44px;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  max-width: 560px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.08);
+  padding: 6px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.02em;
+}
+
+.hero-sub { position: relative; z-index: 2; font-size: 16px; line-height: 1.5; }
+
+.hero-cta {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+  box-shadow: 0 4px 14px rgba(232, 93, 69, 0.35);
+}
+.hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(232, 93, 69, 0.45);
+}
+
+/* ---------- Category row ---------- */
+.category-row {
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+.category-item {
+  padding: 8px 4px;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.category-item:hover {
+  background: #FBEFDD;
+  transform: translateY(-2px);
+}
+.category-item span {
+  display: inline-block;
+  width: 44px; height: 44px; line-height: 44px;
+  border-radius: 50%;
+  background: #FBEFDD;
+  margin-bottom: 4px;
+}
+
+/* ---------- Promo cards ---------- */
+.promo-card {
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+  cursor: pointer;
+}
+.promo-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ---------- Product cards ---------- */
+.product-card {
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.card-tile {
+  height: 140px;
+  background: linear-gradient(145deg, #fbe4dd 0%, #f8f1e0 60%, #fdf6ec 100%);
+}
+.badge-verified, .badge-discount {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: var(--shadow-sm);
+}
+.wishlist-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 50%;
+  width: 30px; height: 30px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease);
+}
+.wishlist-btn:hover { transform: scale(1.12); background: white; }
+
+.add-btn {
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease);
+}
+.add-btn:hover { transform: scale(1.1); background: var(--color-coral); }
+
+/* ---------- Makers section ---------- */
+.maker-card {
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.maker-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.maker-avatar {
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-heading);
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Cart sidebar ---------- */
+.cart-sidebar {
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+.qty-btn {
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.qty-btn:hover { background: var(--color-navy); border-color: var(--color-navy); color: white; }
+
+/* ---------- Side nav ---------- */
+.nav-item { transition: background 0.2s var(--ease), padding-left 0.2s var(--ease); }
+.nav-item:hover:not(.active) { padding-left: 18px; }
+
+/* ---------- Trust bar ---------- */
+.trust-bar { box-shadow: var(--shadow-md); }
+.trust-item span {
+  width: 36px; height: 36px; line-height: 36px; text-align: center;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}

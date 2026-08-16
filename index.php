@@ -8,6 +8,12 @@
 
       <div class="main-content">
         <section class="hero-banner">
+          <svg class="hero-illustration" viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="170" cy="170" r="150" fill="#E85D45" opacity="0.9"/>
+            <circle cx="230" cy="120" r="85" fill="#D9A441" opacity="0.85"/>
+            <circle cx="255" cy="90" r="8" fill="#FDF6EC"/>
+            <circle cx="90" cy="250" r="5" fill="#3FA88C"/>
+          </svg>
           <p class="hero-tag">● 480+ local sellers · island-wide</p>
           <h1>Shop local. <span class="hero-highlight">Support growth.</span></h1>
           <p class="hero-sub">Fresh produce, handmade crafts and everyday finds — from real sellers in your district, delivered fast.</p>
