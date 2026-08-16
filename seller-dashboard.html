@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Seller Dashboard - SMEConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">SME<span>Connect</span></div>
+    <a href="index.html" style="color:var(--color-navy)">← Back to shop</a>
+  </header>
+
+  <main style="padding:0 40px 40px;">
+    <h2 class="section-title" style="padding:0 0 20px;">My Products</h2>
+    <button id="showAddFormBtn" style="background:var(--color-coral);color:white;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;margin-bottom:20px;">+ Add Product</button>
+
+    <div id="productForm" style="display:none; background:white; padding:20px; border-radius:12px; max-width:400px; margin-bottom:20px;">
+      <h3 id="formTitle">Add Product</h3>
+      <input type="hidden" id="editProductId">
+      <input type="text" id="pName" placeholder="Product name" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;">
+      <input type="text" id="pCategory" placeholder="Category (e.g. Fashion)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;">
+      <input type="text" id="pDistrict" placeholder="District" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;">
+      <input type="number" id="pPrice" placeholder="Price (Rs)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;">
+      <input type="number" id="pOriginalPrice" placeholder="Original price (optional)" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;">
+      <button id="saveProductBtn" style="background:var(--color-navy);color:white;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;">Save</button>
+      <button id="cancelFormBtn" style="background:#eee;border:none;padding:10px 18px;border-radius:6px;cursor:pointer;margin-left:8px;">Cancel</button>
+    </div>
+
+    <div id="myProductsList" class="product-grid"></div>
+  </main>
+
+  <script src="assets/js/seller-dashboard.js"></script>
+</body>
+</html>
