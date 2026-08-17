@@ -1,28 +1,89 @@
 const API_BASE = 'http://localhost/smeconnect/api/seller';
 
+function loadDashboardStats() {
+  fetch(`${API_BASE}/get_dashboard_stats.php`, { credentials: 'same-origin' })
+    .then(res => res.json())
+    .then(stats => {
+      if (stats.error) {
+        document.querySelector('.dash-main').innerHTML = `<p>${stats.error} — <a href="index.php">log in as a seller</a> first.</p>`;
+        return;
+      }
+
+      document.getElementById('greeting').textContent = `Welcome back, ${stats.seller_name}. Here's what's happening with your store.`;
+
+      const statGrid = document.getElementById('statGrid');
+      statGrid.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#E5F7F4; color:var(--color-teal-dark);">🛍</div>
+          <div class="stat-value">${stats.product_count}</div>
+          <div class="stat-label">Total Products</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#FCE9E4; color:var(--color-coral-dark);">🧾</div>
+          <div class="stat-value">${stats.order_count}</div>
+          <div class="stat-label">Orders</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#FBEEDA; color:var(--color-gold-dark);">💰</div>
+          <div class="stat-value">Rs ${stats.total_sales.toFixed(0)}</div>
+          <div class="stat-label">Total Sales</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#F1E9FB; color:#7A4FD6;">♡</div>
+          <div class="stat-value">${stats.wishlist_count}</div>
+          <div class="stat-label">Wishlisted</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#E5F7F4; color:var(--color-teal-dark);">★</div>
+          <div class="stat-value">${stats.avg_trust}</div>
+          <div class="stat-label">Trust Score</div>
+        </div>
+      `;
+
+      const table = document.getElementById('ordersTable');
+      if (stats.recent_orders.length === 0) {
+        table.innerHTML = '<p style="color:#8b8578;">No orders yet.</p>';
+      } else {
+        table.innerHTML = `
+          <thead>
+            <tr><th>Order ID</th><th>Total</th><th>Status</th><th>Date</th></tr>
+          </thead>
+          <tbody>
+            ${stats.recent_orders.map(o => `
+              <tr>
+                <td>#${o.id}</td>
+                <td>Rs ${o.total}</td>
+                <td><span class="status-pill status-${(o.status || 'placed').toLowerCase().replace(/\s/g, '-')}">${o.status || 'Placed'}</span></td>
+                <td>${new Date(o.created_at).toLocaleDateString()}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        `;
+      }
+    });
+}
+
 function loadMyProducts() {
   fetch(`${API_BASE}/get_my_products.php`, { credentials: 'same-origin' })
     .then(res => res.json())
     .then(products => {
-      if (products.error) {
-        document.querySelector('main').innerHTML = `<p>${products.error} — <a href="index.html">log in as a seller</a> first.</p>`;
-        return;
-      }
+      if (products.error) return;
       const list = document.getElementById('myProductsList');
       list.innerHTML = '';
       products.forEach(p => {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
+          <div class="card-tile"></div>
           <div class="card-body">
             <p class="category">${p.category}</p>
             <h4>${p.name}</h4>
             <p class="seller">${p.district}</p>
-            <div class="price-row">
-              <span class="price">Rs ${p.price}</span>
+            <div class="price-row"><span class="price">Rs ${p.price}</span></div>
+            <div style="display:flex; gap:8px; margin-top:10px;">
+              <button class="edit-btn" data-id="${p.id}" style="flex:1; padding:8px; border-radius:8px; border:1px solid var(--color-line); background:white; cursor:pointer;">Edit</button>
+              <button class="delete-btn" data-id="${p.id}" style="flex:1; padding:8px; border-radius:8px; border:1px solid #f5c6c6; background:#fff5f5; color:#c0392b; cursor:pointer;">Delete</button>
             </div>
-            <button class="edit-btn" data-id="${p.id}">Edit</button>
-            <button class="delete-btn" data-id="${p.id}">Delete</button>
           </div>
         `;
         list.appendChild(card);
@@ -51,10 +112,8 @@ function openEditForm(product) {
 function deleteProduct(id) {
   if (!confirm('Delete this product?')) return;
   fetch(`${API_BASE}/delete_product.php`, {
-    method: 'POST',
-    credentials: 'same-origin',
-    body: JSON.stringify({ id })
-  }).then(() => loadMyProducts());
+    method: 'POST', credentials: 'same-origin', body: JSON.stringify({ id })
+  }).then(() => { loadMyProducts(); loadDashboardStats(); });
 }
 
 document.getElementById('showAddFormBtn').addEventListener('click', () => {
@@ -77,20 +136,19 @@ document.getElementById('saveProductBtn').addEventListener('click', () => {
     price: parseFloat(document.getElementById('pPrice').value),
     original_price: parseFloat(document.getElementById('pOriginalPrice').value) || null
   };
-
   const endpoint = id ? 'update_product.php' : 'add_product.php';
   if (id) payload.id = id;
 
   fetch(`${API_BASE}/${endpoint}`, {
-    method: 'POST',
-    credentials: 'same-origin',
-    body: JSON.stringify(payload)
+    method: 'POST', credentials: 'same-origin', body: JSON.stringify(payload)
   })
     .then(res => res.json())
     .then(() => {
       document.getElementById('productForm').style.display = 'none';
       loadMyProducts();
+      loadDashboardStats();
     });
 });
 
+loadDashboardStats();
 loadMyProducts();

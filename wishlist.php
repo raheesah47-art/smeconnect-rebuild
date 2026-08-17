@@ -18,6 +18,7 @@
   </main>
 
   <?php include 'includes/modals.php'; ?>
+  <?php include 'includes/footer.php'; ?>
   <?php include 'includes/scripts.php'; ?>
   <script src="/smeconnect/assets/js/wishlist.js"></script>
 </body>

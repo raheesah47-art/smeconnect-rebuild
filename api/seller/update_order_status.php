@@ -39,7 +39,44 @@ if ($result['cnt'] == 0) {
 $stmt = $conn->prepare('INSERT INTO order_status_log (order_id, status) VALUES (?, ?)');
 $stmt->bind_param('is', $orderId, $newStatus);
 $stmt->execute();
-$stmt->close();
+
+// If delivered, recalculate the trust score for every seller involved in this order
+if ($newStatus === 'Delivered') {
+    $sellerStmt = $conn->prepare('
+        SELECT DISTINCT p.seller_id FROM order_items oi
+        JOIN products p ON oi.product_id = p.id
+        WHERE oi.order_id = ?
+    ');
+    $sellerStmt->bind_param('i', $orderId);
+    $sellerStmt->execute();
+    $sellers = $sellerStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    foreach ($sellers as $s) {
+        $sid = $s['seller_id'];
+        // Simplified inline recalculation (same formula as calculate_trust_score.php)
+        $score = 70;
+        $oc = $conn->prepare('SELECT COUNT(DISTINCT oi.order_id) as c FROM order_items oi JOIN products p ON oi.product_id=p.id WHERE p.seller_id=?');
+        $oc->bind_param('i', $sid); $oc->execute();
+        $orderCount = $oc->get_result()->fetch_assoc()['c'];
+        $score += min($orderCount, 15);
+
+        $dc = $conn->prepare('SELECT COUNT(DISTINCT oi.order_id) as c FROM order_items oi JOIN products p ON oi.product_id=p.id WHERE p.seller_id=? AND oi.order_id IN (SELECT order_id FROM order_status_log WHERE status="Delivered")');
+        $dc->bind_param('i', $sid); $dc->execute();
+        $deliveredCount = $dc->get_result()->fetch_assoc()['c'];
+        if ($orderCount > 0) $score += round(($deliveredCount / $orderCount) * 10);
+
+        $ac = $conn->prepare('SELECT DATEDIFF(NOW(), created_at) as d FROM users WHERE id=?');
+        $ac->bind_param('i', $sid); $ac->execute();
+        $daysOld = $ac->get_result()->fetch_assoc()['d'];
+        $score += min(floor($daysOld / 30), 5);
+
+        $finalScore = min($score, 100);
+        $upd = $conn->prepare('UPDATE products SET trust_score=? WHERE seller_id=?');
+        $upd->bind_param('ii', $finalScore, $sid);
+        $upd->execute();
+    }
+}
 
 echo json_encode(['success' => true]);
+
 $conn->close();

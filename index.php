@@ -46,6 +46,21 @@
             <p>Discover their shops →</p>
           </div>
         </section>
+        <section class="delivery-estimator">
+  <div class="delivery-icon">🚚</div>
+  <div style="flex:1;">
+    <h3>Delivery fee estimator</h3>
+    <p>Pick your district — pricing updates instantly, before checkout.</p>
+  </div>
+  <div class="district-picker" id="districtPicker">
+    <button class="district-btn" data-district="Port Louis">Port Louis</button>
+    <button class="district-btn" data-district="Plaines Wilhems">Plaines Wilhems</button>
+    <button class="district-btn" data-district="Moka">Moka</button>
+    <button class="district-btn" data-district="Flacq">Flacq</button>
+    <button class="district-btn" data-district="Grand Port">Grand Port</button>
+  </div>
+  <div class="fee-display" id="feeDisplay">Select a district</div>
+</section>
 
         <section id="productsSection">
           <h2 class="section-title">Best deals for you</h2>
@@ -76,6 +91,7 @@
   </main>
 
   <?php include 'includes/modals.php'; ?>
+  <?php include 'includes/footer.php'; ?>
   <?php include 'includes/scripts.php'; ?>
   <script>loadProducts();</script>
 </body>

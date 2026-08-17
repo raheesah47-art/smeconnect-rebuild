@@ -1,22 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>My Orders - SMEConnect</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
-  <header class="topbar">
-    <div class="logo">SME<span>Connect</span></div>
-    <a href="index.html" style="color:var(--color-navy)">← Back to shop</a>
-  </header>
-  <main style="padding:0 40px 40px;">
-    <h2 class="section-title" style="padding:0 0 20px;">My Orders</h2>
-    <div id="ordersList"></div>
-  </main>
-
-  <footer class="site-footer">
+<footer class="site-footer">
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="logo">
@@ -49,11 +31,7 @@
     </div>
 
     <div class="footer-bottom">
-      <span>&copy; 2026 SMEConnect. All rights reserved.</span>
+      <span>© <?= date('Y') ?> SMEConnect. All rights reserved.</span>
       <span class="footer-payments">VISA · MASTERCARD · PAYPAL · JUICE</span>
     </div>
   </footer>
-
-  <script src="assets/js/my-orders.js"></script>
-</body>
-</html>
