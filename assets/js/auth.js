@@ -7,11 +7,11 @@ function checkSession() {
       if (data.logged_in) {
         document.getElementById('loggedOutView').style.display = 'none';
         document.getElementById('loggedInView').style.display = 'flex';
-        document.getElementById('welcomeMsg').textContent = `Hi, ${data.name} (${data.role})`;
         const initials = data.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
         document.getElementById('userAvatarInitials').textContent = initials;
         document.getElementById('welcomeMsg').textContent = data.name;
         document.getElementById('dashboardLink').style.display = data.role === 'seller' ? 'inline' : 'none';
+      } else {
         document.getElementById('loggedOutView').style.display = 'flex';
         document.getElementById('loggedInView').style.display = 'none';
       }
