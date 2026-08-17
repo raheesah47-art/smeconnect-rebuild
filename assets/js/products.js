@@ -3,12 +3,13 @@ const API_CART = 'http://localhost/smeconnect/api/cart';
 const API_PAYMENTS = 'http://localhost/smeconnect/api/payments';
 const API_WISHLIST = 'http://localhost/smeconnect/api/wishlist';
 
-function loadProducts(overrideFilter, overrideCategory) {
+function loadProducts(overrideFilter, overrideCategory, overrideSearch) {
   const params = new URLSearchParams(window.location.search);
   const filter = overrideFilter !== undefined ? overrideFilter : (params.get('filter') || '');
   const category = overrideCategory !== undefined ? overrideCategory : (params.get('category') || '');
+  const search = overrideSearch !== undefined ? overrideSearch : '';
 
-  let url = `${API_PRODUCTS}/get_products.php?filter=${filter}&category=${encodeURIComponent(category)}`;
+  let url = `${API_PRODUCTS}/get_products.php?filter=${filter}&category=${encodeURIComponent(category)}&search=${encodeURIComponent(search)}`;
 
   fetch(url, { credentials: 'same-origin' })
     .then(res => res.json())

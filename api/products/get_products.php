@@ -5,6 +5,7 @@ require '../../config/db.php';
 
 $filter = $_GET['filter'] ?? '';
 $category = $_GET['category'] ?? '';
+$search = $_GET['search'] ?? '';
 
 $sql = 'SELECT p.*, COALESCE(SUM(oi.quantity), 0) AS units_sold
         FROM products p
@@ -18,6 +19,14 @@ if ($category !== '') {
     $sql .= ' AND p.category = ?';
     $params[] = $category;
     $types .= 's';
+}
+if ($search !== '') {
+    $sql .= ' AND (p.name LIKE ? OR p.category LIKE ? OR p.seller_name LIKE ?)';
+    $searchTerm = '%' . $search . '%';
+    $params[] = $searchTerm;
+    $params[] = $searchTerm;
+    $params[] = $searchTerm;
+    $types .= 'sss';
 }
 if ($filter === 'deals') {
     $sql .= ' AND p.original_price IS NOT NULL AND p.original_price > p.price';

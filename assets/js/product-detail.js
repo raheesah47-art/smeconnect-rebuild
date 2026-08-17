@@ -1,5 +1,6 @@
 const params = new URLSearchParams(window.location.search);
 const productId = params.get('id');
+let currentQty = 1;
 
 fetch(`${API_PRODUCTS}/get_product.php?id=${productId}`, { credentials: 'same-origin' })
   .then(res => res.json())
@@ -16,37 +17,72 @@ fetch(`${API_PRODUCTS}/get_product.php?id=${productId}`, { credentials: 'same-or
       : null;
 
     container.innerHTML = `
-      <div style="display:flex; gap:32px;">
-        <div style="flex:1; height:320px; border-radius:12px; background:linear-gradient(135deg, #fbe4dd, #f8f1e0); position:relative;">
+      <p class="breadcrumb"><a href="/smeconnect/index.php">Home</a> / <a href="/smeconnect/categories.php?category=${encodeURIComponent(p.category)}">${p.category}</a> / ${p.name}</p>
+
+      <div class="detail-card">
+        <div class="detail-image">
           ${discountPct ? `<span class="badge-discount">-${discountPct}%</span>` : ''}
           <span class="badge-verified">${p.trust_score} Verified</span>
         </div>
-        <div style="flex:1;">
-          <p class="category">${p.category}</p>
-          <h1 style="font-family:var(--font-heading); margin:8px 0;">${p.name}</h1>
-          <p style="color:#888;">by ${p.seller_name} · ${p.district}</p>
 
-          <div style="margin:20px 0;">
-            <span style="font-size:28px; font-weight:700;">Rs ${p.price}</span>
-            ${p.original_price ? `<span class="original-price" style="font-size:18px; margin-left:10px;">Rs ${p.original_price}</span>` : ''}
+        <div class="detail-info">
+          <p class="category">${p.category}</p>
+          <h1>${p.name}</h1>
+          <p class="detail-seller">by <a href="/smeconnect/makers.php">${p.seller_name}</a> · ${p.district}</p>
+
+          <div class="detail-price-row">
+            <span class="detail-price">Rs ${p.price}</span>
+            ${p.original_price ? `<span class="detail-original-price">Rs ${p.original_price}</span>` : ''}
+            ${discountPct ? `<span class="detail-save-badge">Save ${discountPct}%</span>` : ''}
           </div>
 
-          <button id="addToCartDetailBtn" style="background:var(--color-coral); color:white; border:none; padding:14px 32px; border-radius:8px; font-weight:600; cursor:pointer; font-size:16px;">
-            Add to cart
-          </button>
+          <div style="display:flex; align-items:center; margin-bottom:24px;">
+            <div class="qty-stepper">
+              <button id="qtyMinus">−</button>
+              <span id="qtyValue">1</span>
+              <button id="qtyPlus">+</button>
+            </div>
+            <button id="addToCartDetailBtn" class="btn-pill-primary">Add to cart</button>
+          </div>
 
-          <div style="margin-top:24px; padding-top:24px; border-top:1px solid #eee;">
-            <p><strong>Trust score:</strong> ${p.trust_score}/100</p>
-            <p><strong>District:</strong> ${p.district}</p>
-            <p><strong>Category:</strong> ${p.category}</p>
+          <div class="detail-meta">
+            <div class="detail-meta-item">
+              <strong>Trust score</strong>
+              <div class="trust-score-bar">
+                <div class="trust-score-track"><div class="trust-score-fill" style="width:${p.trust_score}%"></div></div>
+                <span class="trust-score-num">${p.trust_score}</span>
+              </div>
+            </div>
+            <div class="detail-meta-item">
+              <strong>District</strong>
+              ${p.district}
+            </div>
+            <div class="detail-meta-item">
+              <strong>Category</strong>
+              ${p.category}
+            </div>
+            <div class="detail-meta-item">
+              <strong>Seller</strong>
+              ${p.seller_name}
+            </div>
           </div>
         </div>
       </div>
     `;
 
+    document.getElementById('qtyMinus').addEventListener('click', () => {
+      if (currentQty > 1) currentQty--;
+      document.getElementById('qtyValue').textContent = currentQty;
+    });
+    document.getElementById('qtyPlus').addEventListener('click', () => {
+      currentQty++;
+      document.getElementById('qtyValue').textContent = currentQty;
+    });
+
     document.getElementById('addToCartDetailBtn').addEventListener('click', () => {
-      addToCart(p.id);
-      alert('Added to cart!');
+      for (let i = 0; i < currentQty; i++) {
+        addToCart(p.id);
+      }
     });
   })
   .catch(err => console.error('Failed to load product:', err));

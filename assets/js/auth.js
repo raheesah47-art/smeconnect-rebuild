@@ -8,6 +8,9 @@ function checkSession() {
         document.getElementById('loggedOutView').style.display = 'none';
         document.getElementById('loggedInView').style.display = 'flex';
         document.getElementById('welcomeMsg').textContent = `Hi, ${data.name} (${data.role})`;
+        const initials = data.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        document.getElementById('userAvatarInitials').textContent = initials;
+        document.getElementById('welcomeMsg').textContent = data.name;
         document.getElementById('dashboardLink').style.display = data.role === 'seller' ? 'inline' : 'none';
         document.getElementById('loggedOutView').style.display = 'flex';
         document.getElementById('loggedInView').style.display = 'none';
@@ -30,6 +33,16 @@ document.getElementById('showRegisterBtn').addEventListener('click', () => {
 
 document.getElementById('closeModalBtn').addEventListener('click', () => {
   document.getElementById('authModal').style.display = 'none';
+});
+
+document.getElementById('switchToRegister').addEventListener('click', () => {
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('registerForm').style.display = 'block';
+});
+
+document.getElementById('switchToLogin').addEventListener('click', () => {
+  document.getElementById('registerForm').style.display = 'none';
+  document.getElementById('loginForm').style.display = 'block';
 });
 
 // Login submit
@@ -83,3 +96,14 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 });
 
 checkSession();
+
+const searchForm = document.getElementById('searchForm');
+if (searchForm) {
+  searchForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const query = document.getElementById('searchInput').value.trim();
+    if (query) {
+      window.location.href = `/smeconnect/search.php?q=${encodeURIComponent(query)}`;
+    }
+  });
+}
