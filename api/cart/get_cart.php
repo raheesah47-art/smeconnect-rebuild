@@ -1,10 +1,11 @@
 <?php
 session_start();
-error_log('SESSION ID: ' . session_id());
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-require '../config/db.php';
+header('Content-Type: application/json');
+
+require '../../config/db.php';
 
 $session_id = session_id();
 
@@ -23,5 +24,7 @@ while ($row = $result->fetch_assoc()) {
     $items[] = $row;
 }
 
-echo json_encode($items);
+$stmt->close();
 $conn->close();
+
+echo json_encode($items);
