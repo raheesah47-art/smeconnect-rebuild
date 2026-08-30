@@ -1,18 +1,25 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 require '../../config/db.php';
 
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'seller') {
+    echo json_encode(['error' => 'Not authorized']);
+    exit;
+}
+
+$sellerId = $_SESSION['user_id'];
 $filter = $_GET['filter'] ?? '';
 $category = $_GET['category'] ?? '';
 
 $sql = 'SELECT p.*, COALESCE(SUM(oi.quantity), 0) AS units_sold
         FROM products p
         LEFT JOIN order_items oi ON oi.product_id = p.id
-        WHERE 1=1';
+        WHERE p.seller_id = ?';
 
-$params = [];
-$types = '';
+$params = [$sellerId];
+$types = 'i';
 
 if ($category !== '') {
     $sql .= ' AND p.category = ?';
@@ -34,9 +41,7 @@ if ($filter === 'new') {
 }
 
 $stmt = $conn->prepare($sql);
-if ($params) {
-    $stmt->bind_param($types, ...$params);
-}
+$stmt->bind_param($types, ...$params);
 $stmt->execute();
 $products = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 

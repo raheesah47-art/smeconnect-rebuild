@@ -35,7 +35,8 @@ function loadProducts(overrideFilter, overrideCategory, overrideSearch) {
         card.className = 'product-card';
        card.innerHTML = `
   <a href="/smeconnect/product.php?id=${p.id}" style="text-decoration:none; color:inherit;">
-  <div class="card-tile">
+           <div class="card-tile">
+            <img src="${p.image_url || 'https://placehold.co/400x400/CCCCCC/FFFFFF?text=No+Image'}" alt="${p.name}" class="card-image">
             ${discountPct ? `<span class="badge-discount">-${discountPct}%</span>` : ''}
             <span class="badge-verified">${p.trust_score} Verified</span>
             <button class="wishlist-btn" data-id="${p.id}">♡</button>
@@ -121,6 +122,7 @@ function loadCart() {
         const row = document.createElement('div');
         row.className = 'cart-item';
         row.innerHTML = `
+          <img src="${item.image_url || 'https://placehold.co/80x80/CCCCCC/FFFFFF?text=No+Image'}" alt="${item.name}" class="cart-item-image">
           <div>
             <p class="cart-item-name">${item.name}</p>
             <p class="cart-item-district">${item.district}</p>

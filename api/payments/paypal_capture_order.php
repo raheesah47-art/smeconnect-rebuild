@@ -3,8 +3,8 @@ session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
-require '../config/db.php';
-require '../config/paypal_config.php';
+require '../../config/db.php';
+require '../../config/paypal_config.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $paypalOrderId = $data['orderID'];

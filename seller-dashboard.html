@@ -19,7 +19,7 @@
   <div class="dash-layout">
     <aside class="dash-nav">
       <a href="seller-dashboard.html" class="nav-item active">🏠 Dashboard</a>
-      <a href="#products" class="nav-item">🛍 Products</a>
+      <a href="#myProductsList" class="nav-item">🛍 Products</a>
       <a href="seller-orders.php" class="nav-item">📋 Orders</a>
       <hr>
       <a href="index.php" class="nav-item">← Back to shop</a>
@@ -44,6 +44,9 @@
         <input type="text" id="pDistrict" placeholder="District">
         <input type="number" id="pPrice" placeholder="Price (Rs)">
         <input type="number" id="pOriginalPrice" placeholder="Original price (optional)">
+        <label style="display:block; margin:10px 0 4px; font-size:13px; color:#8b8578;">Product photo</label>
+        <img id="pImagePreview" src="" alt="" style="display:none; width:120px; height:120px; object-fit:cover; border-radius:8px; margin-bottom:8px;">
+        <input type="file" id="pImageFile" accept="image/jpeg,image/png,image/webp">
         <div style="display:flex; gap:10px;">
           <button id="saveProductBtn" class="btn-pill-primary">Save</button>
           <button id="cancelFormBtn" style="background:#eee; border:none; padding:12px 24px; border-radius:100px; cursor:pointer;">Cancel</button>

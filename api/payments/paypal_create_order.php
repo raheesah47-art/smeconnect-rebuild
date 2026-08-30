@@ -3,8 +3,8 @@ session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
-require '../config/db.php';
-require '../config/paypal_config.php';
+require '../../config/db.php';
+require '../../config/paypal_config.php';
 
 // Get an access token from PayPal
 $ch = curl_init(PAYPAL_API_BASE . '/v1/oauth2/token');

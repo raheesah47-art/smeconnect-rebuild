@@ -4,13 +4,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 require '../../config/db.php';
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['error' => 'Please log in to view your orders']);
-    exit;
-}
-
-// Orders are currently tied to session_id, not user_id (from before auth existed)
-// We match by session_id since that's what checkout.php stores
+// Orders are tracked by session_id, so no login is required to view them
 $session_id = session_id();
 
 $stmt = $conn->prepare('SELECT * FROM orders WHERE session_id = ? ORDER BY created_at DESC');

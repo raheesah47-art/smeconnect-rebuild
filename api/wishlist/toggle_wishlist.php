@@ -4,18 +4,13 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 require '../../config/db.php';
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['error' => 'Please log in to use wishlist']);
-    exit;
-}
-
-$userId = $_SESSION['user_id'];
+$session_id = session_id();
 $data = json_decode(file_get_contents('php://input'), true);
 $productId = $data['product_id'];
 
 // Check if it's already wishlisted
-$check = $conn->prepare('SELECT id FROM wishlist WHERE user_id = ? AND product_id = ?');
-$check->bind_param('ii', $userId, $productId);
+$check = $conn->prepare('SELECT id FROM wishlist WHERE session_id = ? AND product_id = ?');
+$check->bind_param('si', $session_id, $productId);
 $check->execute();
 $existing = $check->get_result()->fetch_assoc();
 
@@ -27,8 +22,8 @@ if ($existing) {
     echo json_encode(['success' => true, 'wishlisted' => false]);
 } else {
     // Not wishlisted -> add it
-    $ins = $conn->prepare('INSERT INTO wishlist (user_id, product_id) VALUES (?, ?)');
-    $ins->bind_param('ii', $userId, $productId);
+    $ins = $conn->prepare('INSERT INTO wishlist (session_id, product_id) VALUES (?, ?)');
+    $ins->bind_param('si', $session_id, $productId);
     $ins->execute();
     echo json_encode(['success' => true, 'wishlisted' => true]);
 }

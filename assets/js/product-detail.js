@@ -21,6 +21,7 @@ fetch(`${API_PRODUCTS}/get_product.php?id=${productId}`, { credentials: 'same-or
 
       <div class="detail-card">
         <div class="detail-image">
+          <img src="${p.image_url || 'https://placehold.co/400x400/CCCCCC/FFFFFF?text=No+Image'}" alt="${p.name}" class="detail-product-image">
           ${discountPct ? `<span class="badge-discount">-${discountPct}%</span>` : ''}
           <span class="badge-verified">${p.trust_score} Verified</span>
         </div>

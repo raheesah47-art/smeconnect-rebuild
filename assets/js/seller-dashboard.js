@@ -74,7 +74,7 @@ function loadMyProducts() {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-          <div class="card-tile"></div>
+          <div class="card-tile"><img src="${p.image_url || 'https://placehold.co/400x400/CCCCCC/FFFFFF?text=No+Image'}" alt="${p.name}" class="card-image"></div>
           <div class="card-body">
             <p class="category">${p.category}</p>
             <h4>${p.name}</h4>
@@ -107,6 +107,14 @@ function openEditForm(product) {
   document.getElementById('pDistrict').value = product.district;
   document.getElementById('pPrice').value = product.price;
   document.getElementById('pOriginalPrice').value = product.original_price || '';
+  const preview = document.getElementById('pImagePreview');
+  if (product.image_url) {
+    preview.src = product.image_url;
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+
 }
 
 function deleteProduct(id) {
@@ -116,11 +124,21 @@ function deleteProduct(id) {
   }).then(() => { loadMyProducts(); loadDashboardStats(); });
 }
 
-document.getElementById('showAddFormBtn').addEventListener('click', () => {
+  document.getElementById('showAddFormBtn').addEventListener('click', () => {
   document.getElementById('productForm').style.display = 'block';
   document.getElementById('formTitle').textContent = 'Add Product';
   document.getElementById('editProductId').value = '';
   ['pName','pCategory','pDistrict','pPrice','pOriginalPrice'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('pImageFile').value = '';
+  document.getElementById('pImagePreview').style.display = 'none';
+});
+
+document.getElementById('pImageFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const preview = document.getElementById('pImagePreview');
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
 });
 
 document.getElementById('cancelFormBtn').addEventListener('click', () => {
@@ -129,21 +147,24 @@ document.getElementById('cancelFormBtn').addEventListener('click', () => {
 
 document.getElementById('saveProductBtn').addEventListener('click', () => {
   const id = document.getElementById('editProductId').value;
-  const payload = {
-    name: document.getElementById('pName').value,
-    category: document.getElementById('pCategory').value,
-    district: document.getElementById('pDistrict').value,
-    price: parseFloat(document.getElementById('pPrice').value),
-    original_price: parseFloat(document.getElementById('pOriginalPrice').value) || null
-  };
+  const formData = new FormData();
+  formData.append('name', document.getElementById('pName').value);
+  formData.append('category', document.getElementById('pCategory').value);
+  formData.append('district', document.getElementById('pDistrict').value);
+  formData.append('price', document.getElementById('pPrice').value);
+  formData.append('original_price', document.getElementById('pOriginalPrice').value || '');
+  const imageFile = document.getElementById('pImageFile').files[0];
+  if (imageFile) formData.append('image', imageFile);
+  if (id) formData.append('id', id);
+
   const endpoint = id ? 'update_product.php' : 'add_product.php';
-  if (id) payload.id = id;
 
   fetch(`${API_BASE}/${endpoint}`, {
-    method: 'POST', credentials: 'same-origin', body: JSON.stringify(payload)
+    method: 'POST', credentials: 'same-origin', body: formData
   })
     .then(res => res.json())
-    .then(() => {
+    .then(result => {
+      if (result.error) { alert(result.error); return; }
       document.getElementById('productForm').style.display = 'none';
       loadMyProducts();
       loadDashboardStats();
