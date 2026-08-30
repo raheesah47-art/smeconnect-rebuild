@@ -33,7 +33,7 @@ foreach ($items as $item) {
 }
 
 // Rough MUR to USD conversion for sandbox purposes (approx rate, fine for testing)
-$totalUSD = round($totalMUR / 46, 2);
+$totalUSD = number_format($totalMUR / 46, 2, '.', '');
 
 // Create the PayPal order
 $orderPayload = json_encode([

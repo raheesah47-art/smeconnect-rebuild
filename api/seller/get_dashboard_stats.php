@@ -41,8 +41,8 @@ $wishlistStats = $stmt->get_result()->fetch_assoc();
 
 // Recent orders (last 5)
 $stmt = $conn->prepare('
-    SELECT DISTINCT o.id, o.total, o.created_at,
-           (SELECT status FROM order_status_log WHERE order_id = o.id ORDER BY created_at DESC LIMIT 1) as status
+    SELECT DISTINCT o.id, o.buyer_name, o.buyer_phone, o.total, o.created_at,
+    (SELECT status FROM order_status_log WHERE order_id = o.id ORDER BY created_at DESC LIMIT 1) as status
     FROM orders o
     JOIN order_items oi ON oi.order_id = o.id
     JOIN products p ON oi.product_id = p.id

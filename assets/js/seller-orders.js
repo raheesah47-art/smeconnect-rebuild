@@ -29,6 +29,7 @@ fetch('http://localhost/smeconnect/api/seller/get_seller_orders.php', { credenti
             ${order.current_status}
           </span>
         </div>
+        <p style="color:#8b8578; font-size:13px; margin-bottom:4px;"><strong>${order.buyer_name || 'N/A'}</strong> · ${order.buyer_phone || 'N/A'}</p>
         <p style="color:#8b8578; font-size:13px; margin-bottom:12px;">${order.district}</p>
         <ul style="margin:0 0 16px; padding-left:18px; font-size:14px;">
           ${order.items.map(item => `<li>${item.product_name} × ${item.quantity} — Rs ${item.price * item.quantity}</li>`).join('')}

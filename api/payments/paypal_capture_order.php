@@ -8,6 +8,14 @@ require '../../config/paypal_config.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $paypalOrderId = $data['orderID'];
+$buyerName = trim($data['buyer_name'] ?? '');
+$buyerPhone = trim($data['buyer_phone'] ?? '');
+$district = trim($data['district'] ?? '');
+
+if ($buyerName === '' || $buyerPhone === '' || $district === '') {
+    echo json_encode(['success' => false, 'error' => 'Missing buyer details']);
+    exit;
+}
 
 // Get access token (same as before)
 $ch = curl_init(PAYPAL_API_BASE . '/v1/oauth2/token');
@@ -15,7 +23,13 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_USERPWD, PAYPAL_CLIENT_ID . ':' . PAYPAL_SECRET);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, 'grant_type=client_credentials');
+curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 $response = curl_exec($ch);
+if (curl_errno($ch)) {
+    echo json_encode(['success' => false, 'error' => 'Could not reach PayPal: ' . curl_error($ch)]);
+    exit;
+}
 curl_close($ch);
 $accessToken = json_decode($response, true)['access_token'];
 
@@ -27,7 +41,13 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
     'Authorization: Bearer ' . $accessToken
 ]);
+curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 $response = curl_exec($ch);
+if (curl_errno($ch)) {
+    echo json_encode(['success' => false, 'error' => 'Could not reach PayPal: ' . curl_error($ch)]);
+    exit;
+}
 curl_close($ch);
 $result = json_decode($response, true);
 
@@ -47,10 +67,9 @@ if ($result['status'] === 'COMPLETED') {
     $total = 0;
     foreach ($cartItems as $item) $total += $item['price'] * $item['quantity'];
 
-    $orderStmt = $conn->prepare('INSERT INTO orders (session_id, district, total, payment_method) VALUES (?, ?, ?, ?)');
-    $district = 'Port Louis';
+    $orderStmt = $conn->prepare('INSERT INTO orders (session_id, district, buyer_name, buyer_phone, total, payment_method) VALUES (?, ?, ?, ?, ?, ?)');
     $paymentMethod = 'paypal';
-    $orderStmt->bind_param('ssds', $session_id, $district, $total, $paymentMethod);
+    $orderStmt->bind_param('ssssds', $session_id, $district, $buyerName, $buyerPhone, $total, $paymentMethod);
     $orderStmt->execute();
     $orderId = $conn->insert_id;
 

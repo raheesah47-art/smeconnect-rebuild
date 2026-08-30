@@ -44,14 +44,15 @@ function loadDashboardStats() {
       if (stats.recent_orders.length === 0) {
         table.innerHTML = '<p style="color:#8b8578;">No orders yet.</p>';
       } else {
-        table.innerHTML = `
+           table.innerHTML = `
           <thead>
-            <tr><th>Order ID</th><th>Total</th><th>Status</th><th>Date</th></tr>
+            <tr><th>Order ID</th><th>Buyer</th><th>Total</th><th>Status</th><th>Date</th></tr>
           </thead>
           <tbody>
             ${stats.recent_orders.map(o => `
               <tr>
                 <td>#${o.id}</td>
+                <td>${o.buyer_name || 'N/A'}<br><span style="color:#8b8578; font-size:12px;">${o.buyer_phone || ''}</span></td>
                 <td>Rs ${o.total}</td>
                 <td><span class="status-pill status-${(o.status || 'placed').toLowerCase().replace(/\s/g, '-')}">${o.status || 'Placed'}</span></td>
                 <td>${new Date(o.created_at).toLocaleDateString()}</td>

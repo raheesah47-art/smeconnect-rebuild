@@ -171,6 +171,52 @@ h1, h2, h3 {
   border-radius: 6px;
   flex-shrink: 0;
 }
+
+.checkout-details {
+  padding: 16px 0;
+  margin-top: 8px;
+  border-top: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkout-details textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  box-sizing: border-box;
+  resize: vertical;
+}
+.checkout-details textarea:focus {
+  border-color: var(--color-teal);
+  outline: none;
+}
+
+.checkout-details-title {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  color: var(--color-navy);
+  margin: 0;
+}
+.checkout-details input,
+.checkout-details select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  box-sizing: border-box;
+}
+.checkout-details input:focus,
+.checkout-details select:focus {
+  border-color: var(--color-teal);
+  outline: none;
+}
 .cart-item-name { margin: 0; font-weight: 600; font-size: 14px; }
 .cart-item-district { margin: 0; color: #888; font-size: 12px; }
 .qty-controls { display: flex; align-items: center; gap: 6px; }

@@ -197,6 +197,19 @@ loadMakers();
 
 if (typeof paypal !== 'undefined') {
   paypal.Buttons({
+    onClick: function (data, actions) {
+      const name = document.getElementById('buyerName').value.trim();
+      const phone = document.getElementById('buyerPhone').value.trim();
+      const district = document.getElementById('buyerDistrict').value;
+      const errorEl = document.getElementById('checkoutError');
+
+      if (!name || !phone || !district) {
+        errorEl.textContent = 'Please fill in your name, phone number, and district before paying.';
+        return actions.reject();
+      }
+      errorEl.textContent = '';
+      return actions.resolve();
+    },
     createOrder: function () {
       return fetch(`${API_PAYMENTS}/paypal_create_order.php`, {
         method: 'POST',
@@ -206,15 +219,22 @@ if (typeof paypal !== 'undefined') {
         .then(data => data.id);
     },
     onApprove: function (data) {
+      const name = document.getElementById('buyerName').value.trim();
+      const phone = document.getElementById('buyerPhone').value.trim();
+      const district = document.getElementById('buyerDistrict').value;
+
       return fetch(`${API_PAYMENTS}/paypal_capture_order.php`, {
         method: 'POST',
         credentials: 'same-origin',
-        body: JSON.stringify({ orderID: data.orderID })
+        body: JSON.stringify({ orderID: data.orderID, buyer_name: name, buyer_phone: phone, district: district })
       })
         .then(res => res.json())
         .then(result => {
           if (result.success) {
             alert(`Payment successful! Order #${result.order_id} placed.`);
+            document.getElementById('buyerName').value = '';
+            document.getElementById('buyerPhone').value = '';
+            document.getElementById('buyerDistrict').value = '';
             loadCart();
           } else {
             alert('Payment could not be completed.');

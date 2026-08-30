@@ -13,7 +13,7 @@ $sellerId = $_SESSION['user_id'];
 
 // Find all orders that include items from this seller
 $stmt = $conn->prepare(
-    'SELECT DISTINCT o.id AS order_id, o.district, o.total, o.created_at
+    'SELECT DISTINCT o.id AS order_id, o.district, o.buyer_name, o.buyer_phone, o.total, o.created_at
      FROM orders o
      JOIN order_items oi ON oi.order_id = o.id
      JOIN products p ON oi.product_id = p.id
