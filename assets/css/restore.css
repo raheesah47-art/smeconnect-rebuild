@@ -1,0 +1,63 @@
+/* SMEConnect — restored homepage/content presentation layer */
+/* Added without replacing the existing stylesheet. */
+
+/* Footer restored to the original SMEConnect presentation */
+.site-footer {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--color-navy, #0F1B3D);
+  color: #fff;
+  margin-top: 48px;
+  padding: 48px 40px 20px;
+}
+
+.footer-grid {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr repeat(3, 1fr);
+  gap: 40px;
+}
+
+.footer-brand .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading, 'Playfair Display', serif);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.footer-brand .brand-accent { color: var(--color-teal, #3FA88C); }
+.footer-brand p { color: rgba(255,255,255,.72); max-width: 280px; line-height: 1.6; }
+
+.footer-col { display: flex; flex-direction: column; gap: 10px; }
+.footer-col h4 { margin: 0 0 8px; color: #fff; font-size: 15px; }
+.footer-col a { color: rgba(255,255,255,.72); text-decoration: none; font-size: 14px; }
+.footer-col a:hover { color: #fff; }
+
+.footer-bottom {
+  max-width: 1400px;
+  margin: 36px auto 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,.14);
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: rgba(255,255,255,.6);
+  font-size: 12px;
+}
+
+/* Preserve the earlier homepage spacing and visual rhythm */
+.main-content > section { box-sizing: border-box; }
+
+/* Keep the restored footer readable on smaller screens */
+@media (max-width: 900px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-bottom { flex-direction: column; }
+}
+
+@media (max-width: 600px) {
+  .site-footer { padding: 36px 20px 18px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+}
