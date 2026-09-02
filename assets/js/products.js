@@ -2,6 +2,7 @@ const API_PRODUCTS = 'http://localhost/smeconnect/api/products';
 const API_CART = 'http://localhost/smeconnect/api/cart';
 const API_PAYMENTS = 'http://localhost/smeconnect/api/payments';
 const API_WISHLIST = 'http://localhost/smeconnect/api/wishlist';
+const API_MAKERS = 'http://localhost/smeconnect/api/makers';
 
 function loadProducts(overrideFilter, overrideCategory, overrideSearch) {
   const params = new URLSearchParams(window.location.search);
@@ -173,23 +174,33 @@ function toggleWishlist(productId, btn) {
 }
 
 function loadMakers() {
-  const makers = [
-    { initials: 'AC', name: 'Atelier Coco', location: 'Grand Baie', trust: 98, tag: 'Textiles', color: '#E85D45' },
-    { initials: 'FB', name: 'Ferme Bois Chéri', location: 'Moka', trust: 95, tag: 'Produce', color: '#3FA88C' },
-    { initials: 'KD', name: 'Karo Design', location: 'Curepipe', trust: 91, tag: 'Home', color: '#D9A441' }
-  ];
   const grid = document.getElementById('makersGrid');
   if (!grid) return;
-  grid.innerHTML = makers.map(m => `
-    <div class="maker-card">
-      <div class="maker-avatar" style="background:${m.color}">${m.initials}</div>
-      <div class="maker-info">
-        <h4>${m.name}</h4>
-        <p>${m.location} · Trust ${m.trust}</p>
-        <div class="maker-tags"><span>${m.tag}</span></div>
-      </div>
-    </div>
-  `).join('');
+
+  const colors = ['#E85D45', '#3FA88C', '#D9A441', '#2E4A62', '#6B9E3F'];
+
+    fetch(`${API_MAKERS}/get_makers.php`)
+    .then(res => res.json())
+    .then(makers => {
+      if (!makers.length) {
+        grid.innerHTML = '<p style="color:#8b8578;">No local makers yet — be the first to sell!</p>';
+        return;
+      }
+      grid.innerHTML = makers.map((m, i) => {
+        const initials = m.seller_name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+        const color = colors[i % colors.length];
+        return `
+          <div class="maker-card">
+            <div class="maker-avatar" style="background:${color}">${initials}</div>
+            <div class="maker-info">
+              <h4>${m.seller_name}</h4>
+              <p>${m.district || 'Mauritius'} · Trust ${m.avg_trust}</p>
+              <div class="maker-tags"><span>${m.top_category || 'General'}</span></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    });
 }
 
 loadCart();
@@ -201,10 +212,26 @@ if (typeof paypal !== 'undefined') {
       const name = document.getElementById('buyerName').value.trim();
       const phone = document.getElementById('buyerPhone').value.trim();
       const district = document.getElementById('buyerDistrict').value;
+      const address = document.getElementById('buyerAddress').value.trim();
       const errorEl = document.getElementById('checkoutError');
 
-      if (!name || !phone || !district) {
-        errorEl.textContent = 'Please fill in your name, phone number, and district before paying.';
+      const namePattern = /^[A-Za-z\s]{3,}$/;
+      const phonePattern = /^(\+230)?\s?\d{7,8}$/;
+
+      if (!name || !phone || !district || !address) {
+        errorEl.textContent = 'Please fill in your name, phone number, district, and address before paying.';
+        return actions.reject();
+      }
+      if (!namePattern.test(name)) {
+        errorEl.textContent = 'Please enter a valid name (letters only, at least 3 characters).';
+        return actions.reject();
+      }
+      if (!phonePattern.test(phone)) {
+        errorEl.textContent = 'Please enter a valid Mauritius phone number (7-8 digits).';
+        return actions.reject();
+      }
+      if (address.length < 10) {
+        errorEl.textContent = 'Please enter a more complete delivery address.';
         return actions.reject();
       }
       errorEl.textContent = '';
@@ -222,11 +249,18 @@ if (typeof paypal !== 'undefined') {
       const name = document.getElementById('buyerName').value.trim();
       const phone = document.getElementById('buyerPhone').value.trim();
       const district = document.getElementById('buyerDistrict').value;
+      const address = document.getElementById('buyerAddress').value.trim();
 
       return fetch(`${API_PAYMENTS}/paypal_capture_order.php`, {
         method: 'POST',
         credentials: 'same-origin',
-        body: JSON.stringify({ orderID: data.orderID, buyer_name: name, buyer_phone: phone, district: district })
+        body: JSON.stringify({
+          orderID: data.orderID,
+          buyer_name: name,
+          buyer_phone: phone,
+          district: district,
+          delivery_address: address
+        })
       })
         .then(res => res.json())
         .then(result => {
@@ -235,6 +269,7 @@ if (typeof paypal !== 'undefined') {
             document.getElementById('buyerName').value = '';
             document.getElementById('buyerPhone').value = '';
             document.getElementById('buyerDistrict').value = '';
+            document.getElementById('buyerAddress').value = '';
             loadCart();
           } else {
             alert('Payment could not be completed.');

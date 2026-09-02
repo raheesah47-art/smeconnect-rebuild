@@ -24,6 +24,7 @@
           <div>
             <div class="name" id="welcomeMsg"></div>
             <a href="/smeconnect/seller-dashboard.html" id="dashboardLink" style="display:none; font-size:11px; color:var(--color-teal);">Seller Dashboard</a>
+            <a href="/smeconnect/admin.php" id="adminLink" style="display:none; font-size:11px; color:var(--color-teal);">Admin Panel</a>
           </div>
           <button id="logoutBtn" style="margin-left:8px;">Log out</button>
         </div>

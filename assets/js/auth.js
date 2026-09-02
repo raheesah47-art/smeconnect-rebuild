@@ -11,6 +11,7 @@ function checkSession() {
         document.getElementById('userAvatarInitials').textContent = initials;
         document.getElementById('welcomeMsg').textContent = data.name;
         document.getElementById('dashboardLink').style.display = data.role === 'seller' ? 'inline' : 'none';
+        document.getElementById('adminLink').style.display = data.role === 'admin' ? 'inline' : 'none';
       } else {
         document.getElementById('loggedOutView').style.display = 'flex';
         document.getElementById('loggedInView').style.display = 'none';

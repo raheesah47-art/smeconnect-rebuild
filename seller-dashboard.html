@@ -26,8 +26,16 @@
     </aside>
 
     <main class="dash-main">
-      <h1 class="dash-title">Seller Dashboard</h1>
+            <h1 class="dash-title">Seller Dashboard</h1>
       <p class="dash-sub" id="greeting">Good day! Here's what's happening with your store.</p>
+
+      <div class="profile-pic-section">
+        <img id="sellerProfilePreview" src="" alt="" style="display:none; width:64px; height:64px; object-fit:cover; border-radius:50%;">
+        <div>
+          <label style="display:block; font-size:13px; color:#8b8578; margin-bottom:4px;">Shop logo / profile picture</label>
+          <input type="file" id="sellerProfileFile" accept="image/jpeg,image/png,image/webp">
+        </div>
+      </div>
 
       <div class="stat-grid" id="statGrid"></div>
 
@@ -44,10 +52,21 @@
         <input type="text" id="pDistrict" placeholder="District">
         <input type="number" id="pPrice" placeholder="Price (Rs)">
         <input type="number" id="pOriginalPrice" placeholder="Original price (optional)">
-        <label style="display:block; margin:10px 0 4px; font-size:13px; color:#8b8578;">Product photo</label>
-        <img id="pImagePreview" src="" alt="" style="display:none; width:120px; height:120px; object-fit:cover; border-radius:8px; margin-bottom:8px;">
-        <input type="file" id="pImageFile" accept="image/jpeg,image/png,image/webp">
-        <div style="display:flex; gap:10px;">
+                <label style="display:block; margin:10px 0 4px; font-size:13px; color:#8b8578;">Product photos (up to 3)</label>
+        <div style="display:flex; gap:10px; margin-bottom:8px;">
+          <div>
+            <img id="pImagePreview" src="" alt="" style="display:none; width:80px; height:80px; object-fit:cover; border-radius:8px;">
+            <input type="file" id="pImageFile" accept="image/jpeg,image/png,image/webp">
+          </div>
+          <div>
+            <img id="pImagePreview2" src="" alt="" style="display:none; width:80px; height:80px; object-fit:cover; border-radius:8px;">
+            <input type="file" id="pImageFile2" accept="image/jpeg,image/png,image/webp">
+          </div>
+          <div>
+            <img id="pImagePreview3" src="" alt="" style="display:none; width:80px; height:80px; object-fit:cover; border-radius:8px;">
+            <input type="file" id="pImageFile3" accept="image/jpeg,image/png,image/webp">
+          </div>
+        </div>
           <button id="saveProductBtn" class="btn-pill-primary">Save</button>
           <button id="cancelFormBtn" style="background:#eee; border:none; padding:12px 24px; border-radius:100px; cursor:pointer;">Cancel</button>
         </div>

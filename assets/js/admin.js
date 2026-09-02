@@ -46,10 +46,14 @@ function loadProducts() {
     .then(res => res.json())
     .then(products => {
       document.getElementById('productsTable').innerHTML = `
-        <thead><tr><th>Name</th><th>Seller</th><th>Category</th><th>Price</th><th>Trust</th><th></th></tr></thead>
+        <thead><tr><th>Photo</th><th>Name</th><th>Seller</th><th>Category</th><th>Price</th><th>Trust</th><th></th></tr></thead>
         <tbody>
           ${products.map(p => `
             <tr>
+              <td>
+                <img src="${p.image_url || 'https://placehold.co/60x60/CCCCCC/FFFFFF?text=No+Image'}" style="width:44px; height:44px; object-fit:cover; border-radius:6px;">
+                <input type="file" class="admin-image-input" data-id="${p.id}" accept="image/jpeg,image/png,image/webp" style="display:block; font-size:11px; margin-top:4px; width:110px;">
+              </td>
               <td>${p.name}</td>
               <td>${p.seller_name || '—'}</td>
               <td>${p.category}</td>
@@ -68,6 +72,25 @@ function loadProducts() {
             method: 'POST', credentials: 'same-origin',
             body: JSON.stringify({ id: btn.dataset.id })
           }).then(() => loadProducts());
+        });
+      });
+
+      document.querySelectorAll('.admin-image-input').forEach(input => {
+        input.addEventListener('change', () => {
+          const file = input.files[0];
+          if (!file) return;
+          const formData = new FormData();
+          formData.append('id', input.dataset.id);
+          formData.append('image', file);
+
+          fetch(`${API_ADMIN}/upload_product_image.php`, {
+            method: 'POST', credentials: 'same-origin', body: formData
+          })
+            .then(res => res.json())
+            .then(result => {
+              if (result.error) { alert(result.error); return; }
+              loadProducts();
+            });
         });
       });
     });
