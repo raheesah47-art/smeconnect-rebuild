@@ -7,8 +7,13 @@ function checkSession() {
       if (data.logged_in) {
         document.getElementById('loggedOutView').style.display = 'none';
         document.getElementById('loggedInView').style.display = 'flex';
-        const initials = data.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-        document.getElementById('userAvatarInitials').textContent = initials;
+                const initials = data.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        const avatarEl = document.getElementById('userAvatarInitials');
+        if (data.profile_image) {
+          avatarEl.innerHTML = `<img src="${data.profile_image}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+        } else {
+          avatarEl.textContent = initials;
+        }
         document.getElementById('welcomeMsg').textContent = data.name;
         document.getElementById('dashboardLink').style.display = data.role === 'seller' ? 'inline' : 'none';
         document.getElementById('adminLink').style.display = data.role === 'admin' ? 'inline' : 'none';

@@ -186,12 +186,15 @@ function loadMakers() {
         grid.innerHTML = '<p style="color:#8b8578;">No local makers yet — be the first to sell!</p>';
         return;
       }
-      grid.innerHTML = makers.map((m, i) => {
+            grid.innerHTML = makers.map((m, i) => {
         const initials = m.seller_name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
         const color = colors[i % colors.length];
+        const avatarContent = m.profile_image
+          ? `<img src="${m.profile_image}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`
+          : initials;
         return `
           <div class="maker-card">
-            <div class="maker-avatar" style="background:${color}">${initials}</div>
+            <div class="maker-avatar" style="background:${color}">${avatarContent}</div>
             <div class="maker-info">
               <h4>${m.seller_name}</h4>
               <p>${m.district || 'Mauritius'} · Trust ${m.avg_trust}</p>

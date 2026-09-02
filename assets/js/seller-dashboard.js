@@ -39,26 +39,7 @@ function loadDashboardStats() {
           <div class="stat-label">Trust Score</div>
         </div>
       `;
-       document.getElementById('sellerProfileFile').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
 
-  const preview = document.getElementById('sellerProfilePreview');
-  preview.src = URL.createObjectURL(file);
-  preview.style.display = 'block';
-
-  const formData = new FormData();
-  formData.append('image', file);
-
-  fetch(`${API_BASE}/upload_profile_image.php`, {
-    method: 'POST', credentials: 'same-origin', body: formData
-  })
-    .then(res => res.json())
-    .then(result => {
-      if (result.error) { alert(result.error); return; }
-      alert('Profile picture updated!');
-    });
-});     
       const table = document.getElementById('ordersTable');
       if (stats.recent_orders.length === 0) {
         table.innerHTML = '<p style="color:#8b8578;">No orders yet.</p>';
@@ -188,6 +169,26 @@ document.getElementById('saveProductBtn').addEventListener('click', () => {
       document.getElementById('productForm').style.display = 'none';
       loadMyProducts();
       loadDashboardStats();
+    });
+});
+document.getElementById('sellerProfileFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const preview = document.getElementById('sellerProfilePreview');
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+
+  const formData = new FormData();
+  formData.append('image', file);
+
+  fetch(`${API_BASE}/upload_profile_image.php`, {
+    method: 'POST', credentials: 'same-origin', body: formData
+  })
+    .then(res => res.json())
+    .then(result => {
+      if (result.error) { alert(result.error); return; }
+      alert('Profile picture updated!');
     });
 });
 
