@@ -75,7 +75,7 @@
             </div>
             <a href="/smeconnect/makers.php" class="view-all-link">View all →</a>
           </div>
-          <div id="makersGrid" class="makers-grid"></div>
+          <div id="makersGrid" class="makers-grid" data-limit="3"></div>
         </section>
 
         <section class="trust-bar">

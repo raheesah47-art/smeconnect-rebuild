@@ -179,14 +179,16 @@ function loadMakers() {
 
   const colors = ['#E85D45', '#3FA88C', '#D9A441', '#2E4A62', '#6B9E3F'];
 
-    fetch(`${API_MAKERS}/get_makers.php`)
+        fetch(`${API_MAKERS}/get_makers.php`)
     .then(res => res.json())
     .then(makers => {
       if (!makers.length) {
         grid.innerHTML = '<p style="color:#8b8578;">No local makers yet — be the first to sell!</p>';
         return;
       }
-            grid.innerHTML = makers.map((m, i) => {
+      const limit = grid.dataset.limit ? parseInt(grid.dataset.limit, 10) : makers.length;
+      const limitedMakers = makers.slice(0, limit);
+            grid.innerHTML = limitedMakers.map((m, i) => {
         const initials = m.seller_name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
         const color = colors[i % colors.length];
         const avatarContent = m.profile_image
