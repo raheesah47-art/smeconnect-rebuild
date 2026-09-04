@@ -5,6 +5,9 @@
     <div id="cartItems"></div>
     <div class="cart-totals">
       <div class="row"><span>Subtotal</span><span id="cartSubtotal">Rs 0</span></div>
+      <div class="row" id="deliveryFeeRow" style="display:none;">
+        <span>Delivery fee</span><span id="deliveryFee">Rs 0</span>
+      </div>
     </div>
 
     <div class="checkout-details">
