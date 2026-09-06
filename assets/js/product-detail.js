@@ -20,10 +20,11 @@ fetch(`${API_PRODUCTS}/get_product.php?id=${productId}`, { credentials: 'same-or
       <p class="breadcrumb"><a href="/smeconnect/index.php">Home</a> / <a href="/smeconnect/categories.php?category=${encodeURIComponent(p.category)}">${p.category}</a> / ${p.name}</p>
 
       <div class="detail-card">
-        <div class="detail-image">
+            <div class="detail-image">
           <img src="${p.image_url || 'https://placehold.co/400x400/CCCCCC/FFFFFF?text=No+Image'}" alt="${p.name}" class="detail-product-image">
           ${discountPct ? `<span class="badge-discount">-${discountPct}%</span>` : ''}
           <span class="badge-verified">${p.trust_score} Verified</span>
+          <button class="wishlist-btn" id="wishlistDetailBtn" data-id="${p.id}">♡</button>
         </div>
 
         <div class="detail-info">
@@ -70,6 +71,8 @@ fetch(`${API_PRODUCTS}/get_product.php?id=${productId}`, { credentials: 'same-or
         </div>
       </div>
     `;
+
+    document.getElementById('wishlistDetailBtn').addEventListener('click', () => toggleWishlist(p.id, document.getElementById('wishlistDetailBtn')));
 
     document.getElementById('qtyMinus').addEventListener('click', () => {
       if (currentQty > 1) currentQty--;

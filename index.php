@@ -29,24 +29,6 @@
           <a href="/smeconnect/categories.php" class="category-item"><span>▦</span><p>All categories</p></a>
         </section>
 
-        <section class="promo-row">
-          <div class="promo-card promo-coral">
-            <span class="promo-badge">FLASH SALE</span>
-            <h3>Up to 40% off</h3>
-            <p>Ends in 6h 12m →</p>
-          </div>
-          <div class="promo-card promo-teal">
-            <span class="promo-badge">FREE DELIVERY</span>
-            <h3>On orders over Rs 1,500</h3>
-            <p>Any district, any seller →</p>
-          </div>
-          <div class="promo-card promo-gold">
-            <span class="promo-badge">NEW SELLERS</span>
-            <h3>12 makers joined this week</h3>
-            <p>Discover their shops →</p>
-          </div>
-        </section>
-  
 
         <section id="productsSection">
           <h2 class="section-title">Best deals for you</h2>
