@@ -1252,3 +1252,36 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .buyer-promo-btn:hover {
   opacity: 0.9;
 }
+
+.maker-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.maker-profile-card .maker-avatar {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.maker-profile-card h2 {
+  margin: 0 0 4px;
+  color: var(--color-navy);
+}
+
+.maker-profile-card p {
+  margin: 0 0 4px;
+  color: #888;
+  font-size: 14px;
+}

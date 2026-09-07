@@ -44,16 +44,28 @@ function loadMakerDetail() {
         return;
       }
 
-      gridEl.innerHTML = data.products.map(p => {
+           gridEl.innerHTML = data.products.map(p => {
         const discountPct = p.original_price
           ? Math.round(100 - (p.price / p.original_price) * 100)
           : null;
 
         return `
           <div class="product-card">
-            <img src="${p.image}" alt="${p.name}">
-            <h4>${p.name}</h4>
-            <p class="product-price">Rs ${p.price}${discountPct ? ` <span class="discount">-${discountPct}%</span>` : ''}</p>
+            <a href="/smeconnect/product.php?id=${p.id}" style="text-decoration:none; color:inherit;">
+              <div class="card-tile">
+                <img src="${p.image_url || 'https://placehold.co/400x400/CCCCCC/FFFFFF?text=No+Image'}" alt="${p.name}" class="card-image">
+                ${discountPct ? `<span class="badge-discount">-${discountPct}%</span>` : ''}
+                <span class="badge-verified">${p.trust_score} Verified</span>
+              </div>
+              <div class="card-body">
+                <p class="category">${p.category}</p>
+                <h4>${p.name}</h4>
+                <div class="price-row">
+                  <span class="price">Rs ${p.price}</span>
+                  ${p.original_price ? `<span class="original-price">Rs ${p.original_price}</span>` : ''}
+                </div>
+              </div>
+            </a>
           </div>
         `;
       }).join('');

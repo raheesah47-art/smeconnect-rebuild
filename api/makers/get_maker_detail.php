@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 require '../../config/db.php';
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
 
 $seller_name = isset($_GET['seller']) ? trim($_GET['seller']) : '';
 
@@ -29,17 +29,13 @@ $stmt->execute();
 $maker = $stmt->get_result()->fetch_assoc();
 
 if (!$maker) {
-    echo json_encode([
-        'error' => 'Maker not found',
-        'debug_seller_received' => $seller_name,
-        'debug_seller_length' => strlen($seller_name)
-    ]);
+    echo json_encode(['error' => 'Maker not found']);
     exit;
 }
 
 // Get this seller's products
 $stmt2 = $conn->prepare("
-    SELECT id, name, price, original_price, image, category, trust_score
+    SELECT id, name, price, original_price, image_url, category, trust_score
     FROM products
     WHERE TRIM(seller_name) = TRIM(?)
     ORDER BY id DESC
