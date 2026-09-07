@@ -10,4 +10,12 @@
   <a href="/smeconnect/my-orders.html" class="nav-item">📦 My orders</a>
   <a href="/smeconnect/wishlist.php" class="nav-item <?= $active === 'wishlist' ? 'active' : '' ?>">♡ Wishlist</a>
   <a href="/smeconnect/seller-dashboard.html" class="nav-item">⚙ Seller Dashboard</a>
+
+
+  <div class="seller-promo-card">
+    <span class="seller-promo-label">SELLER PROGRAMME</span>
+    <h3 class="seller-promo-title">Sell on SMEConnect</h3>
+    <p class="seller-promo-text">Reach buyers island-wide. No listing fees for your first 90 days.</p>
+    <button type="button" id="becomeSellerBtn" class="seller-promo-btn">Become a seller</button>
+  </div>
 </aside>

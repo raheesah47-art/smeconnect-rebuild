@@ -113,3 +113,24 @@ if (searchForm) {
     }
   });
 }
+// Become a seller (sidenav promo card)
+const becomeSellerBtn = document.getElementById('becomeSellerBtn');
+if (becomeSellerBtn) {
+  becomeSellerBtn.addEventListener('click', () => {
+    document.getElementById('authModal').style.display = 'flex';
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+    document.getElementById('regRole').value = 'seller';
+  });
+}
+
+// Join the circle (cart sidebar promo card)
+const joinCircleBtn = document.getElementById('joinCircleBtn');
+if (joinCircleBtn) {
+  joinCircleBtn.addEventListener('click', () => {
+    document.getElementById('authModal').style.display = 'flex';
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+    document.getElementById('regRole').value = 'buyer';
+  });
+}

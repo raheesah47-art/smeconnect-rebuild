@@ -30,5 +30,11 @@
       <p id="checkoutError" class="form-error"></p>
     </div>
 
-    <div id="paypal-button-container"></div>
+        <div id="paypal-button-container"></div>
+
+    <div class="buyer-promo-card">
+      <h3 class="buyer-promo-title">Join the SMEConnect circle</h3>
+      <p class="buyer-promo-text">Early access to new sellers, sale previews and a Rs 200 welcome voucher.</p>
+      <button type="button" id="joinCircleBtn" class="buyer-promo-btn">Join free</button>
+    </div>
   </aside>
