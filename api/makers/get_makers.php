@@ -16,7 +16,6 @@ $sql = "
     WHERE p.seller_name IS NOT NULL AND p.seller_name != ''
     GROUP BY p.seller_name
     ORDER BY avg_trust DESC
-    LIMIT 12
 ";
 
 $result = $conn->query($sql);

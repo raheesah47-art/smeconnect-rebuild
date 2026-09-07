@@ -194,15 +194,15 @@ function loadMakers() {
         const avatarContent = m.profile_image
           ? `<img src="${m.profile_image}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`
           : initials;
-        return `
-          <div class="maker-card">
+               return `
+          <a class="maker-card" href="/smeconnect/maker-detail.php?seller=${encodeURIComponent(m.seller_name)}" style="text-decoration:none; color:inherit;">
             <div class="maker-avatar" style="background:${color}">${avatarContent}</div>
             <div class="maker-info">
               <h4>${m.seller_name}</h4>
               <p>${m.district || 'Mauritius'} · Trust ${m.avg_trust}</p>
               <div class="maker-tags"><span>${m.top_category || 'General'}</span></div>
             </div>
-          </div>
+          </a>
         `;
       }).join('');
     });
