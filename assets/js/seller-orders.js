@@ -15,8 +15,9 @@ fetch('http://localhost/smeconnect/api/seller/get_seller_orders.php', { credenti
     }
 
     orders.forEach(order => {
+      const isCancelled = order.current_status === 'Cancelled';
       const currentIndex = STATUS_STEPS.indexOf(order.current_status);
-      const nextStatus = STATUS_STEPS[currentIndex + 1];
+      const nextStatus = isCancelled ? null : STATUS_STEPS[currentIndex + 1];
 
       const card = document.createElement('div');
       card.className = 'product-card';
@@ -34,7 +35,7 @@ fetch('http://localhost/smeconnect/api/seller/get_seller_orders.php', { credenti
         <ul style="margin:0 0 16px; padding-left:18px; font-size:14px;">
           ${order.items.map(item => `<li>${item.product_name} × ${item.quantity} — Rs ${item.price * item.quantity}</li>`).join('')}
         </ul>
-        ${nextStatus ? `<button class="advance-btn btn-pill-primary" data-order-id="${order.order_id}" data-next-status="${nextStatus}">Mark as ${nextStatus}</button>` : '<p style="color:var(--color-teal-dark); font-weight:600;">✓ Delivered</p>'}
+        ${nextStatus ? `<button class="advance-btn btn-pill-primary" data-order-id="${order.order_id}" data-next-status="${nextStatus}">Mark as ${nextStatus}</button>` : (isCancelled ? '<p style="color:var(--color-coral-dark); font-weight:600;">✕ Cancelled</p>' : '<p style="color:var(--color-teal-dark); font-weight:600;">✓ Delivered</p>')}
       `;
       container.appendChild(card);
     });

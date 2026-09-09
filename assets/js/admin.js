@@ -43,22 +43,6 @@ function loadUsers() {
         });
       });
     });
-
-      document.getElementById('usersTable').innerHTML = `
-        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>District</th><th>Joined</th></tr></thead>
-        <tbody>
-          ${users.map(u => `
-            <tr>
-              <td>${u.name}</td>
-              <td>${u.email}</td>
-              <td><span class="status-pill status-confirmed">${u.role}</span></td>
-              <td>${u.district || '—'}</td>
-              <td>${new Date(u.created_at).toLocaleDateString()}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      `;
-    });
 }
 
 function loadProducts() {
