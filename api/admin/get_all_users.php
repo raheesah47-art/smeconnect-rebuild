@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     exit;
 }
 
-$result = $conn->query('SELECT id, name, email, role, district, created_at FROM users ORDER BY created_at DESC');
+$result = $conn->query('SELECT id, name, email, role, district, is_active, created_at FROM users ORDER BY created_at DESC');
 $users = $result->fetch_all(MYSQLI_ASSOC);
 
 echo json_encode($users);

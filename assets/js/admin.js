@@ -9,20 +9,40 @@ function loadUsers() {
         return;
       }
 
-      document.getElementById('adminStats').innerHTML = `
-        <div class="stat-card">
-          <div class="stat-value">${users.length}</div>
-          <div class="stat-label">Total Users</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${users.filter(u => u.role === 'seller').length}</div>
-          <div class="stat-label">Sellers</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${users.filter(u => u.role === 'buyer').length}</div>
-          <div class="stat-label">Buyers</div>
-        </div>
+      document.getElementById('usersTable').innerHTML = `
+        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>District</th><th>Status</th><th>Joined</th><th></th></tr></thead>
+        <tbody>
+          ${users.map(u => `
+            <tr>
+              <td>${u.name}</td>
+              <td>${u.email}</td>
+              <td><span class="status-pill status-confirmed">${u.role}</span></td>
+              <td>${u.district || '—'}</td>
+              <td><span class="status-pill ${u.is_active == 1 ? 'status-delivered' : 'status-out-for-delivery'}">${u.is_active == 1 ? 'Active' : 'Suspended'}</span></td>
+              <td>${new Date(u.created_at).toLocaleDateString()}</td>
+              <td><button class="admin-toggle-status" data-id="${u.id}" style="background:none; border:none; cursor:pointer; font-weight:600; color:${u.is_active == 1 ? '#c0392b' : 'var(--color-teal-dark)'};">${u.is_active == 1 ? 'Suspend' : 'Reactivate'}</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
       `;
+
+      document.querySelectorAll('.admin-toggle-status').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const action = btn.textContent.trim() === 'Suspend' ? 'suspend' : 'reactivate';
+          if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+
+          fetch(`${API_ADMIN}/toggle_user_status.php`, {
+            method: 'POST', credentials: 'same-origin',
+            body: JSON.stringify({ id: btn.dataset.id })
+          })
+            .then(res => res.json())
+            .then(result => {
+              if (result.error) { alert(result.error); return; }
+              loadUsers();
+            });
+        });
+      });
+    });
 
       document.getElementById('usersTable').innerHTML = `
         <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>District</th><th>Joined</th></tr></thead>
