@@ -4,11 +4,16 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 require '../../config/db.php';
 
-// Orders are tracked by session_id, so no login is required to view them
 $session_id = session_id();
+$user_id = $_SESSION['user_id'] ?? null;
 
-$stmt = $conn->prepare('SELECT * FROM orders WHERE session_id = ? ORDER BY created_at DESC');
-$stmt->bind_param('s', $session_id);
+if ($user_id) {
+    $stmt = $conn->prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC');
+    $stmt->bind_param('i', $user_id);
+} else {
+    $stmt = $conn->prepare('SELECT * FROM orders WHERE session_id = ? AND user_id IS NULL ORDER BY created_at DESC');
+    $stmt->bind_param('s', $session_id);
+}
 $stmt->execute();
 $orders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 

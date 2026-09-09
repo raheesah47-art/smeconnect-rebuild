@@ -109,7 +109,7 @@ function openEditForm(product) {
   document.getElementById('pDistrict').value = product.district;
   document.getElementById('pPrice').value = product.price;
   document.getElementById('pOriginalPrice').value = product.original_price || '';
-  document.getElementById('pStockQuantity').value = product.stock_quantity ?? 0;';
+  document.getElementById('pStockQuantity').value = product.stock_quantity ?? 0;
   const preview = document.getElementById('pImagePreview');
   if (product.image_url) {
     preview.src = product.image_url;

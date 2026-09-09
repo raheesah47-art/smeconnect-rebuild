@@ -17,7 +17,6 @@ if ($buyerName === '' || $buyerPhone === '' || $district === '') {
     exit;
 }
 
-// Get access token (same as before)
 $ch = curl_init(PAYPAL_API_BASE . '/v1/oauth2/token');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_USERPWD, PAYPAL_CLIENT_ID . ':' . PAYPAL_SECRET);
@@ -33,7 +32,6 @@ if (curl_errno($ch)) {
 curl_close($ch);
 $accessToken = json_decode($response, true)['access_token'];
 
-// Capture the payment (this is the step that actually finalizes it)
 $ch = curl_init(PAYPAL_API_BASE . "/v2/checkout/orders/{$paypalOrderId}/capture");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
@@ -52,38 +50,40 @@ curl_close($ch);
 $result = json_decode($response, true);
 
 if ($result['status'] === 'COMPLETED') {
-    // NOW it's safe to create the real order in your database
     $session_id = session_id();
+    $user_id = $_SESSION['user_id'] ?? null;
 
-    $stmt = $conn->prepare('
-        SELECT c.product_id, c.quantity, p.name, p.price, p.stock_quantity
-        FROM cart_items c JOIN products p ON c.product_id = p.id
-        WHERE c.session_id = ?
-    ');
-    $stmt->bind_param('s', $session_id);
+    if ($user_id) {
+        $stmt = $conn->prepare('
+            SELECT c.product_id, c.quantity, p.name, p.price
+            FROM cart_items c JOIN products p ON c.product_id = p.id
+            WHERE c.user_id = ?
+        ');
+        $stmt->bind_param('i', $user_id);
+    } else {
+        $stmt = $conn->prepare('
+            SELECT c.product_id, c.quantity, p.name, p.price
+            FROM cart_items c JOIN products p ON c.product_id = p.id
+            WHERE c.session_id = ? AND c.user_id IS NULL
+        ');
+        $stmt->bind_param('s', $session_id);
+    }
     $stmt->execute();
     $cartItems = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-    // Final stock check — payment has already been captured, so if stock ran out
-    // in the meantime we still record the order but flag the issue for the seller
-    // to resolve manually (rather than silently overselling or losing the payment).
     $total = 0;
     foreach ($cartItems as $item) $total += $item['price'] * $item['quantity'];
 
-    $orderStmt = $conn->prepare('INSERT INTO orders (session_id, district, buyer_name, buyer_phone, total, payment_method) VALUES (?, ?, ?, ?, ?, ?)');
+    $orderStmt = $conn->prepare('INSERT INTO orders (session_id, user_id, district, buyer_name, buyer_phone, total, payment_method) VALUES (?, ?, ?, ?, ?, ?, ?)');
     $paymentMethod = 'paypal';
-    $orderStmt->bind_param('ssssds', $session_id, $district, $buyerName, $buyerPhone, $total, $paymentMethod);
+    $orderStmt->bind_param('sisssds', $session_id, $user_id, $district, $buyerName, $buyerPhone, $total, $paymentMethod);
     $orderStmt->execute();
     $orderId = $conn->insert_id;
 
     $itemStmt = $conn->prepare('INSERT INTO order_items (order_id, product_id, product_name, price, quantity) VALUES (?, ?, ?, ?, ?)');
-    $stockStmt = $conn->prepare('UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?');
     foreach ($cartItems as $item) {
         $itemStmt->bind_param('iisdi', $orderId, $item['product_id'], $item['name'], $item['price'], $item['quantity']);
         $itemStmt->execute();
-
-        $stockStmt->bind_param('ii', $item['quantity'], $item['product_id']);
-        $stockStmt->execute();
     }
 
     $logStmt = $conn->prepare('INSERT INTO order_status_log (order_id, status) VALUES (?, ?)');
@@ -91,8 +91,13 @@ if ($result['status'] === 'COMPLETED') {
     $logStmt->bind_param('is', $orderId, $status);
     $logStmt->execute();
 
-    $clearStmt = $conn->prepare('DELETE FROM cart_items WHERE session_id = ?');
-    $clearStmt->bind_param('s', $session_id);
+    if ($user_id) {
+        $clearStmt = $conn->prepare('DELETE FROM cart_items WHERE user_id = ?');
+        $clearStmt->bind_param('i', $user_id);
+    } else {
+        $clearStmt = $conn->prepare('DELETE FROM cart_items WHERE session_id = ? AND user_id IS NULL');
+        $clearStmt->bind_param('s', $session_id);
+    }
     $clearStmt->execute();
 
     echo json_encode(['success' => true, 'order_id' => $orderId]);

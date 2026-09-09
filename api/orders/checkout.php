@@ -11,29 +11,32 @@ require '../../config/db.php';
 $data = json_decode(file_get_contents('php://input'), true);
 $district = $data['district'];
 $session_id = session_id();
+$user_id = $_SESSION['user_id'] ?? null;
 
-// 1. Get current cart items
-$stmt = $conn->prepare('
-    SELECT c.product_id, c.quantity, p.name, p.price, p.stock_quantity
-    FROM cart_items c
-    JOIN products p ON c.product_id = p.id
-    WHERE c.session_id = ?
-');
-$stmt->bind_param('s', $session_id);
+// 1. Get current cart items (same user_id/session logic as get_cart.php)
+if ($user_id) {
+    $stmt = $conn->prepare('
+        SELECT c.product_id, c.quantity, p.name, p.price
+        FROM cart_items c
+        JOIN products p ON c.product_id = p.id
+        WHERE c.user_id = ?
+    ');
+    $stmt->bind_param('i', $user_id);
+} else {
+    $stmt = $conn->prepare('
+        SELECT c.product_id, c.quantity, p.name, p.price
+        FROM cart_items c
+        JOIN products p ON c.product_id = p.id
+        WHERE c.session_id = ? AND c.user_id IS NULL
+    ');
+    $stmt->bind_param('s', $session_id);
+}
 $stmt->execute();
 $cartItems = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
 if (count($cartItems) === 0) {
     echo json_encode(['error' => 'Cart is empty']);
     exit;
-}
-
-// 1b. Final stock check before placing the order (in case stock changed since it was added to cart)
-foreach ($cartItems as $item) {
-    if ($item['quantity'] > $item['stock_quantity']) {
-        echo json_encode(['error' => "Sorry, \"{$item['name']}\" no longer has enough stock. Please update your cart."]);
-        exit;
-    }
 }
 
 // 2. Calculate total
@@ -44,23 +47,19 @@ foreach ($cartItems as $item) {
 
 // 3. Create the order
 $paymentMethod = $data['payment_method'] ?? 'unpaid';
-$orderStmt = $conn->prepare('INSERT INTO orders (session_id, district, total, payment_method) VALUES (?, ?, ?, ?)');
-$orderStmt->bind_param('ssds', $session_id, $district, $total, $paymentMethod);
+$orderStmt = $conn->prepare('INSERT INTO orders (session_id, user_id, district, total, payment_method) VALUES (?, ?, ?, ?, ?)');
+$orderStmt->bind_param('sisds', $session_id, $user_id, $district, $total, $paymentMethod);
 $orderStmt->execute();
 $orderId = $conn->insert_id;
 
-// 4. Copy each cart item into order_items, and decrement stock
+// 4. Copy each cart item into order_items
 $itemStmt = $conn->prepare('
     INSERT INTO order_items (order_id, product_id, product_name, price, quantity)
     VALUES (?, ?, ?, ?, ?)
 ');
-$stockStmt = $conn->prepare('UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?');
 foreach ($cartItems as $item) {
     $itemStmt->bind_param('iisdi', $orderId, $item['product_id'], $item['name'], $item['price'], $item['quantity']);
     $itemStmt->execute();
-
-    $stockStmt->bind_param('ii', $item['quantity'], $item['product_id']);
-    $stockStmt->execute();
 }
 
 // 5. Log initial status
@@ -69,9 +68,14 @@ $status = 'Placed';
 $logStmt->bind_param('is', $orderId, $status);
 $logStmt->execute();
 
-// 6. Clear the cart
-$clearStmt = $conn->prepare('DELETE FROM cart_items WHERE session_id = ?');
-$clearStmt->bind_param('s', $session_id);
+// 6. Clear the cart (same ownership logic)
+if ($user_id) {
+    $clearStmt = $conn->prepare('DELETE FROM cart_items WHERE user_id = ?');
+    $clearStmt->bind_param('i', $user_id);
+} else {
+    $clearStmt = $conn->prepare('DELETE FROM cart_items WHERE session_id = ? AND user_id IS NULL');
+    $clearStmt->bind_param('s', $session_id);
+}
 $clearStmt->execute();
 
 echo json_encode(['success' => true, 'order_id' => $orderId]);
