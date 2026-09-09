@@ -22,8 +22,10 @@ fetch(`http://localhost/smeconnect/api/wishlist/get_wishlist.php`, { credentials
       card.innerHTML = `
         <a href="/smeconnect/product.php?id=${p.id}" style="text-decoration:none; color:inherit;">
         <div class="card-tile">
+          <img src="${p.image_url || 'https://placehold.co/400x400/CCCCCC/FFFFFF?text=No+Image'}" alt="${p.name}" class="card-image">
           ${discountPct ? `<span class="badge-discount">-${discountPct}%</span>` : ''}
           <span class="badge-verified">${p.trust_score} Verified</span>
+          <button class="wishlist-btn" data-id="${p.id}">♥</button>
         </div>
         <div class="card-body">
           <p class="category">${p.category}</p>
@@ -45,6 +47,23 @@ fetch(`http://localhost/smeconnect/api/wishlist/get_wishlist.php`, { credentials
         e.preventDefault();
         e.stopPropagation();
         addToCart(btn.dataset.id);
+      });
+    });
+
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        fetch(`${API_WISHLIST}/toggle_wishlist.php`, {
+          method: 'POST',
+          credentials: 'same-origin',
+          body: JSON.stringify({ product_id: btn.dataset.id })
+        })
+          .then(res => res.json())
+          .then(() => {
+            btn.closest('.product-card').remove();
+          })
+          .catch(err => console.error('Failed to remove wishlist item:', err));
       });
     });
   })
