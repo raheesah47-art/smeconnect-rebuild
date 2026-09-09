@@ -17,6 +17,7 @@ $district = $_POST['district'] ?? '';
 $category = $_POST['category'] ?? '';
 $price = (float)($_POST['price'] ?? 0);
 $originalPrice = isset($_POST['original_price']) && $_POST['original_price'] !== '' ? (float)$_POST['original_price'] : null;
+$stockQuantity = isset($_POST['stock_quantity']) ? (int)$_POST['stock_quantity'] : 0;
 
 $imageUrl = null;
 $updateImage = false;
@@ -47,17 +48,17 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
 
 if ($updateImage) {
     $stmt = $conn->prepare('
-        UPDATE products SET name=?, district=?, category=?, price=?, original_price=?, image_url=?
+        UPDATE products SET name=?, district=?, category=?, price=?, original_price=?, stock_quantity=?, image_url=?
         WHERE id=? AND seller_id=?
     ');
-    $stmt->bind_param('sssddsii', $name, $district, $category, $price, $originalPrice, $imageUrl, $id, $sellerId);
+    $stmt->bind_param('sssddisii', $name, $district, $category, $price, $originalPrice, $stockQuantity, $imageUrl, $id, $sellerId);
 } else {
     // No new photo chosen — keep the existing image_url as-is
     $stmt = $conn->prepare('
-        UPDATE products SET name=?, district=?, category=?, price=?, original_price=?
+        UPDATE products SET name=?, district=?, category=?, price=?, original_price=?, stock_quantity=?
         WHERE id=? AND seller_id=?
     ');
-    $stmt->bind_param('sssddii', $name, $district, $category, $price, $originalPrice, $id, $sellerId);
+    $stmt->bind_param('sssddiii', $name, $district, $category, $price, $originalPrice, $stockQuantity, $id, $sellerId);
 }
 $stmt->execute();
 

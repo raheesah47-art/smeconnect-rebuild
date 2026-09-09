@@ -32,6 +32,9 @@ function loadProducts(overrideFilter, overrideCategory, overrideSearch) {
           ? Math.round(100 - (p.price / p.original_price) * 100)
           : null;
 
+            const outOfStock = p.stock_quantity <= 0;
+        const lowStock = !outOfStock && p.stock_quantity <= 5;
+
         const card = document.createElement('div');
         card.className = 'product-card';
        card.innerHTML = `
@@ -46,10 +49,12 @@ function loadProducts(overrideFilter, overrideCategory, overrideSearch) {
             <p class="category">${p.category}</p>
             <h4>${p.name}</h4>
             <p class="seller">by ${p.seller_name} · ${p.district}</p>
+            ${outOfStock ? `<p style="color:#c0392b; font-size:12px; font-weight:600; margin:4px 0;">Out of stock</p>` : ''}
+            ${lowStock ? `<p style="color:var(--color-coral); font-size:12px; font-weight:600; margin:4px 0;">Only ${p.stock_quantity} left</p>` : ''}
             <div class="price-row">
               <span class="price">Rs ${p.price}</span>
               ${p.original_price ? `<span class="original-price">Rs ${p.original_price}</span>` : ''}
-              <button class="add-btn" data-id="${p.id}">+</button>
+              <button class="add-btn" data-id="${p.id}" ${outOfStock ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''}>+</button>
          </div>
   </div>
   </a>
@@ -78,7 +83,13 @@ function addToCart(productId) {
     body: JSON.stringify({ product_id: productId })
   })
     .then(res => res.json())
-    .then(() => loadCart())
+    .then(result => {
+      if (result.error) {
+        alert(result.error);
+        return;
+      }
+      loadCart();
+    })
     .catch(err => console.error('addToCart failed:', err));
 }
 

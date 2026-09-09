@@ -74,13 +74,14 @@ function loadMyProducts() {
       products.forEach(p => {
         const card = document.createElement('div');
         card.className = 'product-card';
-        card.innerHTML = `
+                card.innerHTML = `
           <div class="card-tile"><img src="${p.image_url || 'https://placehold.co/400x400/CCCCCC/FFFFFF?text=No+Image'}" alt="${p.name}" class="card-image"></div>
           <div class="card-body">
             <p class="category">${p.category}</p>
             <h4>${p.name}</h4>
             <p class="seller">${p.district}</p>
             <div class="price-row"><span class="price">Rs ${p.price}</span></div>
+            <p style="font-size:12px; color:${p.stock_quantity > 0 ? '#8b8578' : '#c0392b'}; margin:4px 0 0;">${p.stock_quantity > 0 ? `${p.stock_quantity} in stock` : 'Out of stock'}</p>
             <div style="display:flex; gap:8px; margin-top:10px;">
               <button class="edit-btn" data-id="${p.id}" style="flex:1; padding:8px; border-radius:8px; border:1px solid var(--color-line); background:white; cursor:pointer;">Edit</button>
               <button class="delete-btn" data-id="${p.id}" style="flex:1; padding:8px; border-radius:8px; border:1px solid #f5c6c6; background:#fff5f5; color:#c0392b; cursor:pointer;">Delete</button>
@@ -108,6 +109,7 @@ function openEditForm(product) {
   document.getElementById('pDistrict').value = product.district;
   document.getElementById('pPrice').value = product.price;
   document.getElementById('pOriginalPrice').value = product.original_price || '';
+  document.getElementById('pStockQuantity').value = product.stock_quantity ?? 0;';
   const preview = document.getElementById('pImagePreview');
   if (product.image_url) {
     preview.src = product.image_url;
@@ -125,11 +127,11 @@ function deleteProduct(id) {
   }).then(() => { loadMyProducts(); loadDashboardStats(); });
 }
 
-  document.getElementById('showAddFormBtn').addEventListener('click', () => {
+    document.getElementById('showAddFormBtn').addEventListener('click', () => {
   document.getElementById('productForm').style.display = 'block';
   document.getElementById('formTitle').textContent = 'Add Product';
   document.getElementById('editProductId').value = '';
-  ['pName','pCategory','pDistrict','pPrice','pOriginalPrice'].forEach(id => document.getElementById(id).value = '');
+  ['pName','pCategory','pDistrict','pPrice','pOriginalPrice','pStockQuantity'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('pImageFile').value = '';
   document.getElementById('pImagePreview').style.display = 'none';
 });
@@ -154,6 +156,7 @@ document.getElementById('saveProductBtn').addEventListener('click', () => {
   formData.append('district', document.getElementById('pDistrict').value);
   formData.append('price', document.getElementById('pPrice').value);
   formData.append('original_price', document.getElementById('pOriginalPrice').value || '');
+  formData.append('stock_quantity', document.getElementById('pStockQuantity').value || '0');
   const imageFile = document.getElementById('pImageFile').files[0];
   if (imageFile) formData.append('image', imageFile);
   if (id) formData.append('id', id);

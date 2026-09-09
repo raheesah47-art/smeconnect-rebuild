@@ -14,7 +14,7 @@ $session_id = session_id();
 
 // 1. Get current cart items
 $stmt = $conn->prepare('
-    SELECT c.product_id, c.quantity, p.name, p.price
+    SELECT c.product_id, c.quantity, p.name, p.price, p.stock_quantity
     FROM cart_items c
     JOIN products p ON c.product_id = p.id
     WHERE c.session_id = ?
@@ -26,6 +26,14 @@ $cartItems = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 if (count($cartItems) === 0) {
     echo json_encode(['error' => 'Cart is empty']);
     exit;
+}
+
+// 1b. Final stock check before placing the order (in case stock changed since it was added to cart)
+foreach ($cartItems as $item) {
+    if ($item['quantity'] > $item['stock_quantity']) {
+        echo json_encode(['error' => "Sorry, \"{$item['name']}\" no longer has enough stock. Please update your cart."]);
+        exit;
+    }
 }
 
 // 2. Calculate total
@@ -41,14 +49,18 @@ $orderStmt->bind_param('ssds', $session_id, $district, $total, $paymentMethod);
 $orderStmt->execute();
 $orderId = $conn->insert_id;
 
-// 4. Copy each cart item into order_items
+// 4. Copy each cart item into order_items, and decrement stock
 $itemStmt = $conn->prepare('
     INSERT INTO order_items (order_id, product_id, product_name, price, quantity)
     VALUES (?, ?, ?, ?, ?)
 ');
+$stockStmt = $conn->prepare('UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?');
 foreach ($cartItems as $item) {
     $itemStmt->bind_param('iisdi', $orderId, $item['product_id'], $item['name'], $item['price'], $item['quantity']);
     $itemStmt->execute();
+
+    $stockStmt->bind_param('ii', $item['quantity'], $item['product_id']);
+    $stockStmt->execute();
 }
 
 // 5. Log initial status

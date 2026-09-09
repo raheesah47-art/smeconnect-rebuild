@@ -16,6 +16,10 @@ fetch(`${API_PRODUCTS}/get_product.php?id=${productId}`, { credentials: 'same-or
       ? Math.round(100 - (p.price / p.original_price) * 100)
       : null;
 
+    const stockQty = p.stock_quantity ?? 0;
+    const outOfStock = stockQty <= 0;
+    const lowStock = !outOfStock && stockQty <= 5;
+
     container.innerHTML = `
       <p class="breadcrumb"><a href="/smeconnect/index.php">Home</a> / <a href="/smeconnect/categories.php?category=${encodeURIComponent(p.category)}">${p.category}</a> / ${p.name}</p>
 
@@ -38,13 +42,16 @@ fetch(`${API_PRODUCTS}/get_product.php?id=${productId}`, { credentials: 'same-or
             ${discountPct ? `<span class="detail-save-badge">Save ${discountPct}%</span>` : ''}
           </div>
 
+          ${outOfStock ? `<p style="color:#c0392b; font-weight:600; margin-bottom:16px;">Out of stock</p>` : ''}
+          ${lowStock ? `<p style="color:var(--color-coral); font-weight:600; margin-bottom:16px;">Only ${stockQty} left in stock</p>` : ''}
+
           <div style="display:flex; align-items:center; margin-bottom:24px;">
             <div class="qty-stepper">
-              <button id="qtyMinus">−</button>
-              <span id="qtyValue">1</span>
-              <button id="qtyPlus">+</button>
+              <button id="qtyMinus" ${outOfStock ? 'disabled' : ''}>−</button>
+              <span id="qtyValue">${outOfStock ? 0 : 1}</span>
+              <button id="qtyPlus" ${outOfStock ? 'disabled' : ''}>+</button>
             </div>
-            <button id="addToCartDetailBtn" class="btn-pill-primary">Add to cart</button>
+            <button id="addToCartDetailBtn" class="btn-pill-primary" ${outOfStock ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''}>Add to cart</button>
           </div>
 
           <div class="detail-meta">
@@ -74,19 +81,25 @@ fetch(`${API_PRODUCTS}/get_product.php?id=${productId}`, { credentials: 'same-or
 
     document.getElementById('wishlistDetailBtn').addEventListener('click', () => toggleWishlist(p.id, document.getElementById('wishlistDetailBtn')));
 
-    document.getElementById('qtyMinus').addEventListener('click', () => {
-      if (currentQty > 1) currentQty--;
-      document.getElementById('qtyValue').textContent = currentQty;
-    });
-    document.getElementById('qtyPlus').addEventListener('click', () => {
-      currentQty++;
-      document.getElementById('qtyValue').textContent = currentQty;
-    });
+    if (!outOfStock) {
+      document.getElementById('qtyMinus').addEventListener('click', () => {
+        if (currentQty > 1) currentQty--;
+        document.getElementById('qtyValue').textContent = currentQty;
+      });
+      document.getElementById('qtyPlus').addEventListener('click', () => {
+        if (currentQty < stockQty) {
+          currentQty++;
+        } else {
+          alert(`Only ${stockQty} in stock.`);
+        }
+        document.getElementById('qtyValue').textContent = currentQty;
+      });
 
-    document.getElementById('addToCartDetailBtn').addEventListener('click', () => {
-      for (let i = 0; i < currentQty; i++) {
-        addToCart(p.id);
-      }
-    });
+      document.getElementById('addToCartDetailBtn').addEventListener('click', () => {
+        for (let i = 0; i < currentQty; i++) {
+          addToCart(p.id);
+        }
+      });
+    }
   })
   .catch(err => console.error('Failed to load product:', err));

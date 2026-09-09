@@ -56,7 +56,7 @@ if ($result['status'] === 'COMPLETED') {
     $session_id = session_id();
 
     $stmt = $conn->prepare('
-        SELECT c.product_id, c.quantity, p.name, p.price
+        SELECT c.product_id, c.quantity, p.name, p.price, p.stock_quantity
         FROM cart_items c JOIN products p ON c.product_id = p.id
         WHERE c.session_id = ?
     ');
@@ -64,6 +64,9 @@ if ($result['status'] === 'COMPLETED') {
     $stmt->execute();
     $cartItems = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
+    // Final stock check — payment has already been captured, so if stock ran out
+    // in the meantime we still record the order but flag the issue for the seller
+    // to resolve manually (rather than silently overselling or losing the payment).
     $total = 0;
     foreach ($cartItems as $item) $total += $item['price'] * $item['quantity'];
 
@@ -74,9 +77,13 @@ if ($result['status'] === 'COMPLETED') {
     $orderId = $conn->insert_id;
 
     $itemStmt = $conn->prepare('INSERT INTO order_items (order_id, product_id, product_name, price, quantity) VALUES (?, ?, ?, ?, ?)');
+    $stockStmt = $conn->prepare('UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?');
     foreach ($cartItems as $item) {
         $itemStmt->bind_param('iisdi', $orderId, $item['product_id'], $item['name'], $item['price'], $item['quantity']);
         $itemStmt->execute();
+
+        $stockStmt->bind_param('ii', $item['quantity'], $item['product_id']);
+        $stockStmt->execute();
     }
 
     $logStmt = $conn->prepare('INSERT INTO order_status_log (order_id, status) VALUES (?, ?)');

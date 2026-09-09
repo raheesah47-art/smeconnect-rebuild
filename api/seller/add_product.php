@@ -17,6 +17,7 @@ $district = $_POST['district'] ?? '';
 $category = $_POST['category'] ?? '';
 $price = (float)($_POST['price'] ?? 0);
 $originalPrice = isset($_POST['original_price']) && $_POST['original_price'] !== '' ? (float)$_POST['original_price'] : null;
+$stockQuantity = isset($_POST['stock_quantity']) ? (int)$_POST['stock_quantity'] : 0;
 
 $imageUrl = null;
 
@@ -45,12 +46,12 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
 }
 
 $stmt = $conn->prepare('
-    INSERT INTO products (name, seller_id, seller_name, district, category, price, original_price, trust_score, image_url)
-    VALUES (?, ?, ?, ?, ?, ?, ?, 80, ?)
+    INSERT INTO products (name, seller_id, seller_name, district, category, price, original_price, stock_quantity, trust_score, image_url)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 80, ?)
 ');
 $stmt->bind_param(
-    'sisssdds',
-    $name, $sellerId, $sellerName, $district, $category, $price, $originalPrice, $imageUrl
+    'sisssddis',
+    $name, $sellerId, $sellerName, $district, $category, $price, $originalPrice, $stockQuantity, $imageUrl
 );
 $stmt->execute();
 

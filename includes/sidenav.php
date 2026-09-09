@@ -9,7 +9,7 @@
   <hr>
   <a href="/smeconnect/my-orders.html" class="nav-item">📦 My orders</a>
   <a href="/smeconnect/wishlist.php" class="nav-item <?= $active === 'wishlist' ? 'active' : '' ?>">♡ Wishlist</a>
-  <a href="/smeconnect/seller-dashboard.html" class="nav-item">⚙ Seller Dashboard</a>
+  <a href="/smeconnect/seller-dashboard.html" id="sidenavDashboardLink" class="nav-item" style="display:none;">⚙ Seller Dashboard</a>
 
 
   <div class="seller-promo-card">

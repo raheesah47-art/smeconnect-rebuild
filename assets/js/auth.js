@@ -14,8 +14,12 @@ function checkSession() {
         } else {
           avatarEl.textContent = initials;
         }
-        document.getElementById('welcomeMsg').textContent = data.name;
         document.getElementById('dashboardLink').style.display = data.role === 'seller' ? 'inline' : 'none';
+document.getElementById('adminLink').style.display = data.role === 'admin' ? 'inline' : 'none';
+const sidenavDashboardLink = document.getElementById('sidenavDashboardLink');
+if (sidenavDashboardLink) {
+  sidenavDashboardLink.style.display = data.role === 'seller' ? 'inline' : 'none';
+}
         document.getElementById('adminLink').style.display = data.role === 'admin' ? 'inline' : 'none';
       } else {
         document.getElementById('loggedOutView').style.display = 'flex';
