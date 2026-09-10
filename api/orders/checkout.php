@@ -13,7 +13,7 @@ $district = $data['district'];
 $session_id = session_id();
 $user_id = $_SESSION['user_id'] ?? null;
 
-// 1. Get current cart items (same user_id/session logic as get_cart.php)
+// 1. Get current cart items
 if ($user_id) {
     $stmt = $conn->prepare('
         SELECT c.product_id, c.quantity, p.name, p.price
@@ -48,7 +48,7 @@ foreach ($cartItems as $item) {
 // 3. Create the order
 $paymentMethod = $data['payment_method'] ?? 'unpaid';
 $orderStmt = $conn->prepare('INSERT INTO orders (session_id, user_id, district, total, payment_method) VALUES (?, ?, ?, ?, ?)');
-$orderStmt->bind_param('sisds', $session_id, $user_id, $district, $total, $paymentMethod);
+$orderStmt->bind_param('siids', $session_id, $user_id, $district, $total, $paymentMethod);
 $orderStmt->execute();
 $orderId = $conn->insert_id;
 
@@ -68,7 +68,7 @@ $status = 'Placed';
 $logStmt->bind_param('is', $orderId, $status);
 $logStmt->execute();
 
-// 6. Clear the cart (same ownership logic)
+// 6. Clear the cart
 if ($user_id) {
     $clearStmt = $conn->prepare('DELETE FROM cart_items WHERE user_id = ?');
     $clearStmt->bind_param('i', $user_id);
