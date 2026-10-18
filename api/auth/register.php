@@ -13,6 +13,9 @@ $name = trim($data['name'] ?? '');
 $email = trim($data['email'] ?? '');
 $password = $data['password'] ?? '';
 $role = $data['role'] ?? 'buyer';
+if (!in_array($role, ['buyer', 'seller'], true)) {
+    $role = 'buyer';
+}
 
 // Validate name
 if ($name === '') {
@@ -53,6 +56,7 @@ $stmt = $conn->prepare('INSERT INTO users (name, email, password_hash, role) VAL
 $stmt->bind_param('ssss', $name, $email, $passwordHash, $role);
 $stmt->execute();
 
+session_regenerate_id(true);
 // Log them in immediately after registering
 $_SESSION['user_id'] = $conn->insert_id;
 $_SESSION['user_name'] = $name;
